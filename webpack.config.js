@@ -5,10 +5,10 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 
 module.exports = {
   entry: {
-    main: ['./src/js/index.js', './src/scss/main.scss'],
+    main: ['./index.js', './src/scss/main.scss'],
   },
   output: {
-    filename: 'assets/js/[name].js',
+    filename: '[name].js',
     chunkFilename: '[name].min.js',
     path: resolve(__dirname, 'build'),
     clean: true,
