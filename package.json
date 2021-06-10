@@ -38,6 +38,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "heroku": "^7.54.1",
+    "mersenne-twister": "^1.1.0",
     "ws": "^7.4.6"
   },
   "browserslist": [

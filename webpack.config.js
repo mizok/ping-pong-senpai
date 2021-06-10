@@ -13,6 +13,7 @@ module.exports = {
     path: resolve(__dirname, 'build'),
     clean: true,
   },
+  devtool: 'inline-source-map',
   devServer: {
     contentBase: resolve(__dirname, 'build'),
     open: true,
@@ -85,7 +86,8 @@ module.exports = {
   resolve: {
     alias: {
       '@img': resolve(__dirname, './src/img'),
-      '@font': resolve(__dirname, './src/font')
+      '@font': resolve(__dirname, './src/font'),
+      '@core': resolve(__dirname, './core')
     }
   },
   plugins: [
