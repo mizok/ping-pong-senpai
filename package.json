@@ -1,5 +1,5 @@
 {
-  "name": "ping-pong-frontend",
+  "name": "ping-pong",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -35,7 +35,11 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1",
+    "heroku": "^7.54.1",
+    "ws": "^7.4.6"
+  },
   "browserslist": [
     "last 2 version",
     "> 1%",
