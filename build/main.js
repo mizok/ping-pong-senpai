@@ -15,7 +15,7 @@
   \******************/
 /***/ (function() {
 
-eval("function aaa() {}\n\n//# sourceURL=webpack://ping-pong/./index.js?");
+eval("var HOST = location.origin.replace(/^http/, 'ws');\nvar ws = new WebSocket(HOST);\nvar el;\nvar str;\nvar id = new Date().getTime();\nvar playerRecognized = false;\nvar localData = {\n  login: false,\n  id: id,\n  cursor: {\n    x: 0,\n    y: 0\n  }\n};\n\nws.onmessage = function (event) {\n  // 取回整體遊戲當前狀況資料\n  var dataFromServer = JSON.parse(event.data);\n\n  if (dataFromServer.connected === true) {\n    ws.send(JSON.stringify(localData));\n    localData.login = true;\n  } else {\n    // 把當前遊戲狀況資料印出來\n    str = '';\n    el = document.getElementById('server-time');\n    dataFromServer.clients.forEach(function (o, i) {\n      str += \"\\u73A9\\u5BB6\".concat(i, \"\\u6ED1\\u9F20\\u5EA7\\u6A19X:\").concat(o.cursor.x);\n      el.innerHTML = str;\n    }); // 把當前玩家操作狀況送給server\n    // 注意送出前都要先轉字串\n\n    ws.send(JSON.stringify(localData));\n  }\n};\n\ndocument.addEventListener('DOMContentLoaded', function () {\n  document.body.addEventListener('mousemove', function (event) {\n    localData.cursor.x = event.pageX;\n    localData.cursor.y = event.pageY;\n  });\n});\n\n//# sourceURL=webpack://ping-pong/./index.js?");
 
 /***/ }),
 
