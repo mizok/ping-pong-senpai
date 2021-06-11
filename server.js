@@ -2,19 +2,20 @@ const express = require('express');
 const CACHE = require('./cache');
 const PORT = process.env.PORT || 3000;
 const INDEX = '/index.html';
-const FPS = 60;
+const FPS = 30;
 
 const server = express()
   .use(express.static('build'), (req, res) => res.sendFile(INDEX, { root: __dirname + '/build' }))
   .listen(PORT, () => console.log(`Server online, Listening on ${PORT}`));
 
-
 const WebsocketServer = require('ws').Server;
 
 const wsServer = new WebsocketServer({ server });
-let intervalID;
+
 
 wsServer.on('connection', (client) => {
+  let intervalID;
+
   client.send(JSON.stringify({ connected: true }));
 
   client.on('message', (data) => {
@@ -35,7 +36,6 @@ wsServer.on('connection', (client) => {
       o.id != data.id
     })
   });
-
 
   intervalID = setInterval(() => {
     wsServer.clients.forEach((client) => {
