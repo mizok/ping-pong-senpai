@@ -95,6 +95,10 @@ export class Canvas2DFxBase {
     this.ctx.restore();
   }
 
+  clear() {
+    this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
+  }
+
 
 
   addEventHandler() {

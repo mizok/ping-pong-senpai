@@ -29,8 +29,11 @@ wsServer.on('connection', (client) => {
     }
   })
 
-  client.on('close', () => {
-    clearInterval(intervalID)
+  client.on('close', (data) => {
+    clearInterval(intervalID);
+    CACHE.clients = CACHE.clients.filter((o, i) => {
+      o.id != data.id
+    })
   });
 
 

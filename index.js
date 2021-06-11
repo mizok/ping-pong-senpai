@@ -40,3 +40,7 @@ ws.onmessage = (event) => {
   }
 
 };
+
+ws.onclose = (event) => {
+  ws.send(JSON.stringify(localData));
+}

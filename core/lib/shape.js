@@ -16,6 +16,7 @@ export function drawCircle(ctx, x, y, width, color, alpha) {
   ctx.restore();
 }
 export function drawLine(ctx, x0, y0, x1, y1, strokeColor, strokeWidth) {
+  ctx.save();
   ctx.strokeStyle = strokeColor;
   ctx.lineWidth = strokeWidth;
   ctx.beginPath();
@@ -23,4 +24,13 @@ export function drawLine(ctx, x0, y0, x1, y1, strokeColor, strokeWidth) {
   ctx.lineTo(x1, y1);
   ctx.closePath();
   ctx.stroke();
+  ctx.restore();
+}
+
+export function drawText(ctx, textContent = 'text', x, y, color = '#000', fontSize = 12, font = 'Arial') {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${fontSize}px ${font}`;
+  ctx.fillText(textContent, x, y);
+  ctx.restore();
 }
