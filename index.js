@@ -3,7 +3,6 @@ import { gameBuilder } from './core/engine';
 let HOST = location.origin.replace(/^http/, 'ws')
 let ws = new WebSocket(HOST);
 let id = new Date().getTime();
-let game;
 let gameController;
 let localData = {
   login: false,
@@ -14,22 +13,24 @@ let localData = {
   }
 }
 
+let game = gameBuilder();
+game.promise.then((instance) => {
+  localData.login = true;
+  document.body.addEventListener('mousemove', (event) => {
+    localData.cursor.x = event.pageX;
+    localData.cursor.y = event.pageY;
+  })
+  gameController = instance;
+})
+
 ws.onmessage = (event) => {
   // 取回整體遊戲當前狀況資料
   let dataFromServer = JSON.parse(event.data);
 
   if (dataFromServer.connected === true) {
-    ws.send(JSON.stringify(localData));
-    game = gameBuilder();
-    game.promise.then((instance) => {
-      localData.login = true;
-      document.body.addEventListener('mousemove', (event) => {
-        localData.cursor.x = event.pageX;
-        localData.cursor.y = event.pageY;
-      })
-      gameController = instance;
-    })
     game.start();
+    // 這時送的是初始資料
+    ws.send(JSON.stringify(localData));
   }
   else {
     // 渲染遊戲畫面
