@@ -9,7 +9,23 @@
 <script defer src="main.js"></script><link href="./assets/css/main.css" rel="stylesheet"></head>
 
 <body>
-
+  <div class="initial-screen" id="initial-screen">
+    <div class="initial-screen__title">PING PONG SENPAI.</div>
+    <div class="initial-screen__room-code"></div>
+    <div class="initial-screen__room-code-prompt popout" id="join-game-prompt">
+      <div class="popout__mask"></div>
+      <div class="popout__body">
+        <div class="popout__title">PLEASE INPUT THE ROOM CODE</div>
+        <div class="popout__input input-block">
+          <input class="input-block__input" id="room-code-input" type="text" placeholder="ROOM CODE">
+        </div>
+        <div class="popout__button button" id="confirm-join-game"></div>
+        <div class="error-tag">error</div>
+      </div>
+    </div>
+    <button class="initial-screen__button button" id="create-game">HOST A NEW GAME</button>
+    <button class="initial-screen__button button" id="show-join-game-prompt">JOIN AN EXISTING GAME</button>
+  </div>
 </body>
 
 </html>

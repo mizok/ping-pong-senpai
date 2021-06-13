@@ -1,4 +1,4 @@
-module.exports = {
+const dataStorage = {
   ball: {
     speed: {
       x: 0,
@@ -12,4 +12,24 @@ module.exports = {
   clients: [
 
   ]
+}
+
+function setClientStorage(id, data) {
+
+}
+function getClientStorage(id, data) {
+
+}
+
+function setBallStorage() {
+
+}
+
+function getBallStorage() {
+
+}
+
+
+module.exports = {
+  dataStorage,
 }
