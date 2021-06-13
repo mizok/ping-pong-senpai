@@ -34,7 +34,8 @@ export class Engine extends Canvas2DFxBase {
         data.clients[i].cursor.x + this.config.cursor.radius,
         data.clients[i].cursor.y + this.config.cursor.radius / 2 - 10,
         '#fff',
-        '12px Arial'
+        12,
+        'Arial'
       )
     }
   }
