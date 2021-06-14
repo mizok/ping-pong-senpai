@@ -1,5 +1,6 @@
 import { Canvas2DFxBase, boot } from './lib/base';
 import { drawCircle } from './lib/shape';
+import { $ } from './lib/dom'
 
 const BALL_ANIMATION_DEFAULT = {
   afterImage: false,
@@ -169,7 +170,7 @@ class SpotsBumping extends Canvas2DFxBase {
 }
 
 export function initSplash() {
-  let initialScreen = document.querySelector('#initial-screen');
+  let initialScreen = $('#initial-screen');
   let virtualCanvas = document.createElement('canvas');
 
   let spotAnimation = boot(SpotsBumping, SPOTS_ANIMATION_DEFAULT, {}, virtualCanvas, initialScreen);

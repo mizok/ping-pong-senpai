@@ -23,11 +23,13 @@
           <button class="popout__button button" id="confirm-join-game">CONFIRM</button>
         </div>
       </div>
-      <div class="initial-screen__room-code-display popout">
+      <div class="initial-screen__room-code-display popout" id="room-code-display-popout">
         <div class="popout__mask"></div>
         <div class="popout__body">
           <div class="popout__title popout__title--vice">YOUR ROOM CODE IS:</div>
           <h2 id="room-code-display" class="popout__title popout__title--vice"></h2>
+          <h4 id="waiting-opponent-msg">WAITING FOR OPPONENT...</h4>
+          <button class="button" id="game-start" style="display: none;">GO!</button>
         </div>
       </div>
       <div class="initial-screen__btn-wrapper">

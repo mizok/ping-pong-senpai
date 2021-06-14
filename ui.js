@@ -1,11 +1,13 @@
 import { playerNumber } from './data';
+import { $ } from './core/lib/dom'
+
 
 export function initUI(socket) {
-  let createGameBtn = document.querySelector('#create-game');
-  let showJoinGamePromptBtn = document.querySelector('#show-join-game-prompt');
-  let confirmJoinGameBtn = document.querySelector('#confirm-join-game');
-  let roomCodeInput = document.querySelector('#room-code-input');
-  let roomCodeDisplay = document.querySelector('#room-code-display');
+  let createGameBtn = $('#create-game');
+  let showJoinGamePromptBtn = $('#show-join-game-prompt');
+  let confirmJoinGameBtn = $('#confirm-join-game');
+  let roomCodeInput = $('#room-code-input');
+  let roomCodeDisplay = $('#room-code-display');
   let initTrigger;
   let initUIPromise = new Promise((res, rej) => {
     initTrigger = res;
@@ -13,7 +15,7 @@ export function initUI(socket) {
 
   //bind events
   showJoinGamePromptBtn.addEventListener('click', () => {
-    showJoinGamePrompt();
+    togglePopout('join-game-prompt', true);
   });
 
   createGameBtn.addEventListener('click', () => {
@@ -34,17 +36,24 @@ export function initUI(socket) {
   return initUIPromise;
 }
 
+
+function togglePopout(id, status) {
+  let popout = $(`.popout#${id}`);
+  if (status) {
+    popout.classList.add('popout--show');
+  }
+  else {
+    popout.classList.remove('popout--show');
+  }
+}
+
 export function hideInitialScreen() {
-  let initialScreen = document.querySelector('#initial-screen');
+  let initialScreen = $('#initial-screen');
   initialScreen.style.display = 'none';
 }
 
-
-function showJoinGamePrompt() {
-
-}
-
 function newGame(socket) {
+  togglePopout('room-code-display-popout', true);
   socket.emit('newGame');
 }
 

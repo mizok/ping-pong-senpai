@@ -10,14 +10,29 @@
   display: none;
 
   &--show {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__mask {
     background-color: $mask-bg;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
   }
 
   &__body {
     background-color: $gs000;
+    width: 100%;
+    max-width: 500px;
+    border: 3px solid $gs025;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    z-index: 2;
   }
 }

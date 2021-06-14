@@ -1,15 +1,25 @@
 import { initUI, hideInitialScreen } from './ui';
-import { initSplash } from './core/splash'
-import { gameBuilder } from './core/game'
+import { initSplash } from './core/splash';
+import { gameBuilder } from './core/game';
+import { $, toggle } from './core/lib/dom';
+
 const socket = require('socket.io-client')('http://localhost:3000');
-let splashInitPromise = initSplash();
+
+initSplash();
+
 let uiInitPromise = initUI(socket);
 let game = gameBuilder();
 let gameContoller;
+let toggleWaitingOpponent = (status) => {
+  toggle('#game-start', status);
+  toggle('#wait-opponent-msg', !status);
+}
+
 
 uiInitPromise.then(() => {
   game.trigger();
 })
+
 game.promise.then((instance) => {
   gameContoller = instance;
 })
@@ -23,7 +33,7 @@ socket.on('gameInit', () => {
 
 socket.on('playerJoined', (playerNumber) => {
   if (playerNumber === 2) {
-    alert('人到齊了~');
+    toggleWaitingOpponent(true);
   }
 })
 
