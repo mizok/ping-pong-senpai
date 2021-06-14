@@ -25,13 +25,9 @@ export class Canvas2DFxBase {
       const cvs = document.createElement('canvas');
       this.ele.appendChild(cvs);
       this.cvs = this.ele.querySelectorAll('canvas')[0];
-      this.canvasWidth = this.ele.getBoundingClientRect().width;
-      this.canvasHeight = this.ele.getBoundingClientRect().height;
     }
     else {
       this.cvs = this.ele;
-      this.canvasWidth = this.ele.parentElement.getBoundingClientRect().width;
-      this.canvasHeight = this.ele.parentElement.getBoundingClientRect().height;
     }
 
     this.ctx = this.cvs.getContext('2d');
@@ -150,6 +146,6 @@ export function boot(ctor, defaultConfig, config, triggerOnDomContentLoaded) {
 
   return {
     promise: bootromise,
-    start: trigger
+    boot: trigger
   }
 }

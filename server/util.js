@@ -2,7 +2,7 @@ const mersenneTwister = require('mersenne-twister');
 const mt = new mersenneTwister();
 
 function genRandomId(digits) {
-  const randomSource = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+  const randomSource = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz1234567890';
   let
     randomCode = '',
     randomNum = 0;

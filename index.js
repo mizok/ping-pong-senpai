@@ -6,7 +6,7 @@ let game = gameBuilder();
 let gameContoller;
 
 uiInitPromise.then(() => {
-  game.start();
+  game.boot();
 })
 game.promise.then((instance) => {
   gameContoller = instance;
@@ -14,9 +14,27 @@ game.promise.then((instance) => {
 
 socket.on('greeting', greetingHandler);
 
-socket.on('gameInit', (playerNumber) => {
+socket.on('gameInit', () => {
   hideInitialScreen();
   gameContoller.drawCourt();
+})
+
+socket.on('playerJoined', (playerNumber) => {
+  if (playerNumber === 2) {
+    alert('人到齊了~');
+  }
+})
+
+socket.on('tooManyPlayers', () => {
+  alert('該房人數已滿');
+})
+
+socket.on('unknownCode', () => {
+  alert('無效的房間碼');
+})
+
+socket.on('hostCantBeGuest', () => {
+  alert('房主不能重複加入自己開好的房間喔');
 })
 
 function greetingHandler() {

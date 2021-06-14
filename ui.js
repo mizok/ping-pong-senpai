@@ -5,6 +5,7 @@ export function initUI(socket) {
   let showJoinGamePromptBtn = document.querySelector('#show-join-game-prompt');
   let confirmJoinGameBtn = document.querySelector('#confirm-join-game');
   let roomCodeInput = document.querySelector('#room-code-input');
+  let roomCodeDisplay = document.querySelector('#room-code-display');
   let initTrigger;
   let initUIPromise = new Promise((res, rej) => {
     initTrigger = res;
@@ -24,6 +25,10 @@ export function initUI(socket) {
     confirmJoinGame(socket, roomCode);
   })
 
+  socket.on('genRoomCode', (data) => {
+    roomCodeDisplay.innerHTML = data;
+  })
+
   initTrigger();
 
   return initUIPromise;
@@ -41,19 +46,8 @@ function showJoinGamePrompt() {
 
 function newGame(socket) {
   socket.emit('newGame');
-  initGame(socket);
 }
 
 function confirmJoinGame(socket, roomCode) {
   socket.emit('joinGame', roomCode);
-  initGame(socket);
-}
-
-function initGame(socket) {
-  socket.emit('playerJoined', playerJoinedHandler);
-}
-
-
-function playerJoinedHandler(number) {
-  playerNumber = number;
 }

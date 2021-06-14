@@ -24,33 +24,44 @@ function newGameHandler(client) {
   client.emit('genRoomCode', roomCode);
   stateStorage[roomCode] = genGameState();
   client.join(roomCode);
-  client.number = 1;
-  client.emit('init', 1)
+  client.emit('playerJoined', 1)
 }
 
 
-function joinGameHandler(client, roomCode) {
-  const room = io.sockets.adapter.rooms[roomCode];
+async function joinGameHandler(client, roomCode) {
+  const roomsOnServer = io.sockets.adapter.rooms;
+  const room = roomsOnServer.get(roomCode);
 
-  let usersInThisRoom;
-  if (room) {
-    usersInThisRoom = room.sockets;
+  //如果房間不存在
+  if (!room) {
+    client.emit('unknownCode');
+    return;
   }
-  // 計算該房user 數量
-  let numClients = 0;
-  if (usersInThisRoom) {
-    numClients = Object.keys(allUsers).length;
+
+
+  const socketInstances = await io.in(roomCode).fetchSockets();
+  // 這邊判斷指定房名玩家數量的方法是根據當前該房有多少socket實例來判斷
+
+  if (socketInstances.indexOf(client) != -1) {
+    client.emit('hostCantBeGuest');
+    return;
   }
+
 
   // 如果該房內玩家數量為空
-  if (numClients === 0) {
+  if (!socketInstances.length) {
     client.emit('unknownCode');
     return;
   }
   // 若該房人數在超過1人
-  else if (numClients > 1) {
+  else if (socketInstances.length > 1) {
     client.emit('tooManyPlayers');
     return;
+  }
+  else {
+
+    client.join(roomCode);
+    client.emit('playerJoined', 2)
   }
 }
 

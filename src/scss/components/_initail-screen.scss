@@ -1,0 +1,22 @@
+.initial-screen {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: $initial-screen-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__inner {}
+
+  &__title {
+    display: block;
+    text-align: center;
+  }
+
+  &__button {
+    display: inline-block;
+  }
+}
