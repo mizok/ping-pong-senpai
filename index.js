@@ -1,12 +1,14 @@
 import { initUI, hideInitialScreen } from './ui';
+import { initSplash } from './core/splash'
 import { gameBuilder } from './core/game'
 const socket = require('socket.io-client')('http://localhost:3000');
+let splashInitPromise = initSplash();
 let uiInitPromise = initUI(socket);
 let game = gameBuilder();
 let gameContoller;
 
 uiInitPromise.then(() => {
-  game.boot();
+  game.trigger();
 })
 game.promise.then((instance) => {
   gameContoller = instance;

@@ -2,7 +2,7 @@ import { debounce, is, pointerEventToXY } from './function';
 
 export class Canvas2DFxBase {
   constructor(
-    ele, config, defaultConfig
+    ele, config, defaultConfig, virtualParent
   ) {
     config = is.obj(config) ? config : {};
     defaultConfig = is.obj(defaultConfig) ? defaultConfig : {};
@@ -13,6 +13,7 @@ export class Canvas2DFxBase {
       x: 0,
       y: 0
     };
+    this.virtualParent = virtualParent;
     this.ctx = null;
     this.frameIsPaused = false;
     this.isClick = false;
@@ -21,10 +22,13 @@ export class Canvas2DFxBase {
     this.initBase();
   }
   initBase() {
+
     if (this.ele.tagName !== 'CANVAS') {
       const cvs = document.createElement('canvas');
+
       this.ele.appendChild(cvs);
-      this.cvs = this.ele.querySelectorAll('canvas')[0];
+
+      this.cvs = cvs;
     }
     else {
       this.cvs = this.ele;
@@ -61,22 +65,43 @@ export class Canvas2DFxBase {
       this.refreshBaseFrameCounter();
     })
   }
+
+  virtualParentValidation() {
+    return document.body.contains(this.virtualParent) || this.virtualParent === document.body;
+  }
+
   triggerResizingMechanism() {
     if (this.canvasSizefixed) return;
     if (this.ele.tagName !== 'CANVAS') {
-      let canvasWidth = this.ele.getBoundingClientRect().width;
-      let canvasHeight = this.ele.getBoundingClientRect().height;
+      let canvasWidth, canvasHeight;
+      if (this.virtualParentValidation()) {
+        canvasWidth = this.virtualParent.getBoundingClientRect().width;
+        canvasHeight = this.virtualParent.getBoundingClientRect().height;
+      }
+      else {
+        canvasWidth = this.ele.getBoundingClientRect().width;
+        canvasHeight = this.ele.getBoundingClientRect().height;
+      }
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
+
+
     }
     else {
-      let canvasWidth = this.cvs.parentElement.getBoundingClientRect().width;
-      let canvasHeight = this.cvs.parentElement.getBoundingClientRect().height;
+      let canvasWidth, canvasHeight;
+      if (this.virtualParentValidation()) {
+        canvasWidth = this.virtualParent.getBoundingClientRect().width;
+        canvasHeight = this.virtualParent.getBoundingClientRect().height;
+      }
+      else {
+        canvasWidth = this.cvs.parentElement.getBoundingClientRect().width;
+        canvasHeight = this.cvs.parentElement.getBoundingClientRect().height;
+      }
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
+
     }
   }
-
 
   setCanvasSize(width, height) {
     this.canvasSizefixed = true;
@@ -96,6 +121,7 @@ export class Canvas2DFxBase {
   }
 
   addEventHandler() {
+
     this.cvs.addEventListener('click', () => {
       this.isClick = true;
     })
@@ -123,29 +149,22 @@ export class Canvas2DFxBase {
 
 }
 
-export function boot(ctor, defaultConfig, config, triggerOnDomContentLoaded) {
-  let canvas = document.getElementById('canvas');
-  canvas = canvas ? canvas : document.body;
-  let bootromise, trigger;
-  if (triggerOnDomContentLoaded) {
-    bootromise = new Promise((res, rej) => {
-      document.addEventListener('DOMContentLoaded', () => {
-        let instance = new ctor(canvas, config, defaultConfig);
-        res(instance);
-      });
-    });
-  }
-  else {
-    bootromise = new Promise((res, rej) => {
-      trigger = () => {
-        let instance = new ctor(canvas, config, defaultConfig);
-        res(instance);
-      };
-    });
+export function boot(ctor, defaultConfig, config, targetEle, virtualParent) {
+  let cvs = document.getElementById('canvas');
+  cvs = cvs ? cvs : document.body;
+  let ele = targetEle ? targetEle : cvs;
+  let trigger;
+  let bootPromise = new Promise((res, rej) => {
+    trigger = () => {
+      let instance = new ctor(ele, config, defaultConfig, virtualParent);
+      res(instance);
+    };
+  });
+
+  let controller = {
+    promise: bootPromise,
+    trigger: trigger
   }
 
-  return {
-    promise: bootromise,
-    boot: trigger
-  }
+  return controller;
 }

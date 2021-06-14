@@ -42,6 +42,6 @@ export class Engine extends Canvas2DFxBase {
 }
 
 export function gameBuilder() {
-  let game = boot(Engine, DEFAULT, {}, false);
+  let game = boot(Engine, DEFAULT, {}, document.body);
   return game;
 }

@@ -1,5 +1,10 @@
 .button {
   display: inline-flex;
   width: 300px;
-  background-color: black;
+  background-color: $gs025;
+  color: $gs000;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+
 }

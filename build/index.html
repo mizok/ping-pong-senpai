@@ -11,7 +11,7 @@
 <body>
   <div class="initial-screen" id="initial-screen">
     <div class="initial-screen__inner">
-      <div class="initial-screen__title">PING PONG SENPAI.</div>
+      <div class="initial-screen__title font-bubble">PING PONG<br>SENPAI.</div>
       <div class="initial-screen__room-code-prompt popout" id="join-game-prompt">
         <div class="popout__mask"></div>
         <div class="popout__body">
@@ -30,8 +30,11 @@
           <h2 id="room-code-display" class="popout__title popout__title--vice"></h2>
         </div>
       </div>
-      <button class="initial-screen__button button" id="create-game">HOST A NEW GAME</button>
-      <button class="initial-screen__button button" id="show-join-game-prompt">JOIN AN EXISTING GAME</button>
+      <div class="initial-screen__btn-wrapper">
+        <button class="initial-screen__button button" id="create-game">HOST A NEW GAME</button>
+        <button class="initial-screen__button button" id="show-join-game-prompt">JOIN AN EXISTING GAME</button>
+      </div>
+
     </div>
   </div>
 
