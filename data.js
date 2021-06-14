@@ -14,17 +14,4 @@ export const dataStorage = {
   ]
 }
 
-export function setClientStorage(id, data) {
-
-}
-export function getClientStorage(id, data) {
-
-}
-
-export function setBallStorage() {
-
-}
-
-export function getBallStorage() {
-
-}
+export let playerNumber = 0;

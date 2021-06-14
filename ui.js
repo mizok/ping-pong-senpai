@@ -1,52 +1,53 @@
+import { playerNumber } from './data';
+
 export function initUI(socket) {
   let createGameBtn = document.querySelector('#create-game');
   let showJoinGamePromptBtn = document.querySelector('#show-join-game-prompt');
   let confirmJoinGameBtn = document.querySelector('#confirm-join-game');
   let roomCodeInput = document.querySelector('#room-code-input');
   let initTrigger;
-  let initGamePromise = new Promise((res, rej) => {
+  let initUIPromise = new Promise((res, rej) => {
     initTrigger = res;
   })
 
   //bind events
-
   showJoinGamePromptBtn.addEventListener('click', () => {
     showJoinGamePrompt();
   });
 
   createGameBtn.addEventListener('click', () => {
-    newGame(socket, initTrigger);
+    newGame(socket);
   });
 
   confirmJoinGameBtn.addEventListener('click', () => {
     let roomCode = roomCodeInput.value;
-    confirmJoinGame(socket, roomCode, initTrigger);
+    confirmJoinGame(socket, roomCode);
   })
 
-  return initGamePromise;
+  initTrigger();
 
+  return initUIPromise;
 }
 
 function showJoinGamePrompt() {
 
 }
 
-function hideInitialScreen() {
-  let initialScreen = document.querySelector('#initial-screen');
-  initialScreen.style.display = 'none';
-}
-
-function newGame(socket, initTrigger) {
+function newGame(socket) {
   socket.emit('newGame');
-  proceed(initTrigger);
+  initGame(socket);
 }
 
-function confirmJoinGame(socket, roomCode, initTrigger) {
+function confirmJoinGame(socket, roomCode) {
   socket.emit('joinGame', roomCode);
-  initGame(initTrigger);
+  initGame(socket);
 }
 
-function initGame(initTrigger) {
-  hideInitialScreen();
-  initTrigger();
+function initGame(socket) {
+  socket.emit('playerJoined', playerJoinedHandler);
+}
+
+
+function playerJoinedHandler(number) {
+  playerNumber = number;
 }

@@ -14,6 +14,14 @@ const dataStorage = {
   ]
 }
 
+const clientRooms = {
+
+}
+
+const state = {
+
+}
+
 function setClientStorage(id, data) {
 
 }
@@ -32,4 +40,6 @@ function getBallStorage() {
 
 module.exports = {
   dataStorage,
+  clientRooms,
+  state
 }
