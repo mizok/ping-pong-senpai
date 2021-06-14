@@ -1,45 +1,50 @@
-const dataStorage = {
-  ball: {
-    speed: {
-      x: 0,
-      y: 0
-    },
-    position: {
-      x: 0,
-      y: 0
-    }
-  },
-  clients: [
+const stateStorage = {
 
-  ]
 }
 
 const clientRooms = {
 
 }
 
-const state = {
+function genGameState() {
+  let state = {
+    ball: {
+      speed: {
+        x: 0,
+        y: 0
+      },
+      position: {
+        x: 0,
+        y: 0
+      }
+    },
+    players: [
+      {
+        location: 0
+      },
+      {
+        location: 0
+      }
+    ]
+  }
 
+  return state;
 }
 
-function setClientStorage(id, data) {
 
-}
-function getClientStorage(id, data) {
 
-}
-
-function setBallStorage() {
-
-}
-
-function getBallStorage() {
-
+function getGameStatus(state) {
+  let end, winner;
+  return {
+    end: end,
+    winner: winner
+  }
 }
 
 
 module.exports = {
-  dataStorage,
+  stateStorage,
   clientRooms,
-  state
+  getGameStatus,
+  genGameState
 }

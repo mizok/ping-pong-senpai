@@ -29,6 +29,12 @@ export function initUI(socket) {
   return initUIPromise;
 }
 
+export function hideInitialScreen() {
+  let initialScreen = document.querySelector('#initial-screen');
+  initialScreen.style.display = 'none';
+}
+
+
 function showJoinGamePrompt() {
 
 }
