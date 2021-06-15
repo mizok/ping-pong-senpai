@@ -1,5 +1,5 @@
-import { playerNumber } from './data';
-import { $ } from './core/lib/dom'
+import { $ } from './core/lib/dom';
+import { toggle, toggleClass } from './core/lib/dom';
 
 
 export function initUI(socket) {
@@ -37,7 +37,7 @@ export function initUI(socket) {
 }
 
 
-function togglePopout(id, status) {
+export function togglePopout(id, status) {
   let popout = $(`.popout#${id}`);
   if (status) {
     popout.classList.add('popout--show');
@@ -50,6 +50,11 @@ function togglePopout(id, status) {
 export function hideInitialScreen() {
   let initialScreen = $('#initial-screen');
   initialScreen.style.display = 'none';
+}
+
+export function toggleWaitingOpponent(status) {
+  toggleClass('#game-start', 'button--hidden', !status);
+  toggle('#waiting-opponent-msg', !status);
 }
 
 function newGame(socket) {

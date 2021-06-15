@@ -1,7 +1,7 @@
-import { initUI, hideInitialScreen } from './ui';
+import { initUI, hideInitialScreen, toggleWaitingOpponent, togglePopout } from './ui';
 import { initSplash } from './core/splash';
 import { gameBuilder } from './core/game';
-import { $, toggle } from './core/lib/dom';
+
 
 const socket = require('socket.io-client')('http://localhost:3000');
 
@@ -10,10 +10,7 @@ initSplash();
 let uiInitPromise = initUI(socket);
 let game = gameBuilder();
 let gameContoller;
-let toggleWaitingOpponent = (status) => {
-  toggle('#game-start', status);
-  toggle('#wait-opponent-msg', !status);
-}
+
 
 
 uiInitPromise.then(() => {
@@ -34,6 +31,7 @@ socket.on('gameInit', () => {
 socket.on('playerJoined', (playerNumber) => {
   if (playerNumber === 2) {
     toggleWaitingOpponent(true);
+    togglePopout('join-game-prompt', false);
   }
 })
 

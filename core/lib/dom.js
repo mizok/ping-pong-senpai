@@ -3,5 +3,11 @@ export function $(selector) {
 }
 
 export function toggle(selector, status) {
-  $(selector).setAttribute(style, status ? 'block' : 'none');
+  let styleStr = status ? 'block' : 'none'
+  $(selector).setAttribute('style', `display:${styleStr}`);
+}
+
+export function toggleClass(selector, classname, status) {
+  let action = status ? 'add' : 'remove';
+  $(selector).classList[action](classname);
 }

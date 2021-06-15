@@ -17,7 +17,8 @@ const BALL_ANIMATION_DEFAULT = {
 const SPOTS_ANIMATION_DEFAULT = {
   minSize: 10,
   maxSize: 20,
-  period: 200,
+  period: 300,
+  step: 10,
   bottomLayer: null,
   color: 'rgba(0,0,0,0.03)',
   col: 15,
@@ -130,7 +131,6 @@ class SpotsBumping extends Canvas2DFxBase {
   }
   init() {
     this.animate();
-    console.log(this.cvs);
   }
 
   animate() {
@@ -161,10 +161,10 @@ class SpotsBumping extends Canvas2DFxBase {
       this.expand = false
     }
     if (this.expand) {
-      this.spotsSize += 1;
+      this.spotsSize += this.config.step;
     }
     else {
-      this.spotsSize -= 1;
+      this.spotsSize -= this.config.step;
     }
   }
 }

@@ -62,6 +62,7 @@ async function joinGameHandler(client, roomCode) {
 
     client.join(roomCode);
     client.emit('playerJoined', 2)
+    client.in(roomCode).emit('playerJoined', 2)
   }
 }
 
