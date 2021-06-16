@@ -1,0 +1,17 @@
+.hourglass {
+  $size: 2;
+  // background: $gs025;
+  /* Border stuff to make the outline */
+  border-top: 8px * $size solid $gs025;
+  border-left: 5px * $size solid transparent;
+  border-right: 5px * $size solid transparent;
+  border-bottom: 8px * $size solid $gs025;
+  border-radius: 5px;
+  /* Sizing to make the hourglass display nicely */
+  height: 0px;
+  width: 1px * $size;
+
+  /* Uncomment next 2 lines for spin animation */
+  animation: spin 1.25s infinite linear;
+  margin: 25px;
+}

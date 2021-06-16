@@ -140,4 +140,3 @@ export function getChannelValuesFromRgba(rgba) {
   return rgba.replace(/^(rgb|rgba)\(/, '').replace(/\)$/, '').replace(/\s/g, '').split(',').map(x => parseInt(x));
 }
 
-

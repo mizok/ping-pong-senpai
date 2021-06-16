@@ -16,23 +16,36 @@ export function initUI(socket) {
     initTrigger = res;
   })
 
+  let flag;
+
+  nameConfirm.addEventListener('click', () => {
+    let name = nameInput.value;
+    confirmName(socket, name);
+    if (flag === 'onJoin') {
+      togglePopout('join-game-prompt', true);
+    }
+    else if (flag === 'onCreate') {
+      newGame(socket);
+    }
+  })
+
+
   //bind events
   showJoinGamePromptBtn.addEventListener('click', () => {
-    togglePopout('join-game-prompt', true);
+    flag = 'onJoin';
+    togglePopout('name-input-prompt', true);
   });
 
   createGameBtn.addEventListener('click', () => {
-    newGame(socket);
+    flag = 'onCreate';
+    togglePopout('name-input-prompt', true);
   });
 
   confirmJoinGameBtn.addEventListener('click', () => {
     let roomCode = roomCodeInput.value;
     confirmJoinGame(socket, roomCode);
   })
-  nameConfirm.addEventListener('click', () => {
-    let name = nameInput.value;
-    confirmName(socket, name);
-  })
+
 
   socket.on('genRoomCode', (data) => {
     roomCodeDisplay.innerHTML = data;
@@ -74,9 +87,11 @@ function confirmJoinGame(socket, roomCode) {
   socket.emit('joinGame', roomCode);
 }
 
-function confirmName(socket, name) {
+function confirmName(socket, name, cb) {
   playerRef.name = name;
   socket.emit('nameConfirm', name);
-  $(`[data-role="name"]`).innerHTML = name;
+  document.querySelectorAll(`[data-role="name"]`).forEach((o, i) => {
+    o.innerHTML = name;
+  })
   togglePopout('name-input-prompt', false);
 }

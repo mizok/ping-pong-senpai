@@ -41,7 +41,9 @@
     padding: 30px;
     position: relative;
     z-index: 2;
-    animation: fadeInUp 1s;
+    opacity: 0;
+    animation: fadeInUp 1s forwards;
+    animation-delay: 0.3s;
   }
 
   &__input {
@@ -61,5 +63,9 @@
     margin-top: 20px;
   }
 
+  &__deco {
+    margin: 0 auto;
+    margin-top: 30px;
+  }
 
 }

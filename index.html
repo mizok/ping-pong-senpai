@@ -15,6 +15,9 @@
       <div class="initial-screen__room-code-prompt popout" id="join-game-prompt">
         <div class="popout__mask"></div>
         <div class="popout__body">
+          <div class="popout__title popout__title--vice">
+            HI!&nbsp;<span data-role="name"><span>
+          </div>
           <div class="popout__title">PLEASE INPUT THE ROOM CODE</div>
           <div class="popout__input input-block">
             <input class="input-block__input" id="room-code-input" type="text" placeholder="ROOM CODE">
@@ -46,11 +49,14 @@
           <div class="popout__title popout__title--vice">
             HI!&nbsp;<span data-role="name"><span>
           </div>
-          <div class="popout__title popout__title--vice">YOUR ROOM CODE IS:</div>
-          <h2 id="room-code-display" class="popout__title popout__title--vice"></h2>
-          <h4 id="waiting-opponent-msg">WAITING FOR OPPONENT...</h4>
-          <button class="button button--hidden" id="game-start">GO!</button>
-
+          <div class="popout__title popout__title--vice" hide-on-full>YOUR ROOM CODE IS:</div>
+          <h2 id="room-code-display" class="popout__title popout__title--vice" hide-on-full></h2>
+          <h4 id="waiting-opponent-msg" hide-on-full>WAITING FOR OPPONENT...</h4>
+          <div class="popout__deco hourglass" hide-on-full></div>
+          <div class="popout__btn-wrapper">
+            <button class="button button--null" id="leave-waiting">LEAVE</button>
+            <button class="button button--hidden" id="game-start">START THE MATCH!</button>
+          </div>
         </div>
       </div>
       <div class="initial-screen__btn-wrapper">

@@ -12,4 +12,13 @@
   &--hidden {
     display: none;
   }
+
+  &--null {
+    background-color: transparent;
+    color: $gs025;
+    width: auto;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+  }
 }

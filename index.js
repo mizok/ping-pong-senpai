@@ -51,7 +51,7 @@ socket.on('hostCantBeGuest', () => {
 })
 
 function greetingHandler() {
-  togglePopout('name-input-prompt', true);
+
 }
 
 
