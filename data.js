@@ -14,4 +14,7 @@ export const dataStorage = {
   ]
 }
 
-export let playerNumber = 0;
+export const playerRef = {
+  name: '???',
+  number: 0
+};

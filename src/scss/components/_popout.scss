@@ -23,7 +23,14 @@
     left: 0;
     top: 0;
     z-index: 1;
+    animation: fadeIn 1s;
   }
+
+  &__title+&__title {
+    margin-top: 20px;
+  }
+
+
 
   &__body {
     background-color: $gs000;
@@ -34,6 +41,15 @@
     padding: 30px;
     position: relative;
     z-index: 2;
+    animation: fadeInUp 1s;
+  }
+
+  &__input {
+    margin-top: 30px;
+  }
+
+  &__error-tag {
+    margin-top: 10px;
   }
 
   &__btn-wrapper {
@@ -42,5 +58,8 @@
     left: 0;
     right: 0;
     margin: 0 auto;
+    margin-top: 20px;
   }
+
+
 }

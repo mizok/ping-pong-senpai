@@ -1,5 +1,6 @@
 import { $ } from './core/lib/dom';
 import { toggle, toggleClass } from './core/lib/dom';
+import { playerRef } from './data'
 
 
 export function initUI(socket) {
@@ -8,6 +9,8 @@ export function initUI(socket) {
   let confirmJoinGameBtn = $('#confirm-join-game');
   let roomCodeInput = $('#room-code-input');
   let roomCodeDisplay = $('#room-code-display');
+  let nameInput = $('#name-input');
+  let nameConfirm = $('#name-confirm');
   let initTrigger;
   let initUIPromise = new Promise((res, rej) => {
     initTrigger = res;
@@ -25,6 +28,10 @@ export function initUI(socket) {
   confirmJoinGameBtn.addEventListener('click', () => {
     let roomCode = roomCodeInput.value;
     confirmJoinGame(socket, roomCode);
+  })
+  nameConfirm.addEventListener('click', () => {
+    let name = nameInput.value;
+    confirmName(socket, name);
   })
 
   socket.on('genRoomCode', (data) => {
@@ -58,10 +65,18 @@ export function toggleWaitingOpponent(status) {
 }
 
 function newGame(socket) {
+  playerRef.number = 0;
   togglePopout('room-code-display-popout', true);
   socket.emit('newGame');
 }
 
 function confirmJoinGame(socket, roomCode) {
   socket.emit('joinGame', roomCode);
+}
+
+function confirmName(socket, name) {
+  playerRef.name = name;
+  socket.emit('nameConfirm', name);
+  $(`[data-role="name"]`).innerHTML = name;
+  togglePopout('name-input-prompt', false);
 }

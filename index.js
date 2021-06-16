@@ -28,8 +28,11 @@ socket.on('gameInit', () => {
   gameContoller.drawCourt();
 })
 
-socket.on('playerJoined', (playerNumber) => {
-  if (playerNumber === 2) {
+socket.on('playerJoined', (data) => {
+  if (data.playerNumber === 2) {
+    if (planerRef.number !== 1) {
+      planerRef.number = 2;
+    }
     toggleWaitingOpponent(true);
     togglePopout('join-game-prompt', false);
   }
@@ -48,7 +51,7 @@ socket.on('hostCantBeGuest', () => {
 })
 
 function greetingHandler() {
-
+  togglePopout('name-input-prompt', true);
 }
 
 

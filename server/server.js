@@ -5,7 +5,11 @@ const { FRAME_RATE } = require('./constant');
 
 io.on("connection", (client) => {
   // 送出server 上線訊號
-  client.emit('greeting', { data: 'hello player' });
+  client.emit('greeting');
+
+  client.on('nameConfirm', data => {
+    client.name = data;
+  })
 
   client.on('newGame', () => {
     newGameHandler(client)
@@ -24,7 +28,10 @@ function newGameHandler(client) {
   client.emit('genRoomCode', roomCode);
   stateStorage[roomCode] = genGameState();
   client.join(roomCode);
-  client.emit('playerJoined', 1)
+  client.emit('playerJoined', {
+    playerNumber: 1,
+    playerName: client.name
+  })
 }
 
 
@@ -61,7 +68,10 @@ async function joinGameHandler(client, roomCode) {
   else {
 
     client.join(roomCode);
-    client.emit('playerJoined', 2)
+    client.emit('playerJoined', {
+      playerNumber: 2,
+      playerName: client.name
+    })
     client.in(roomCode).emit('playerJoined', 2)
   }
 }

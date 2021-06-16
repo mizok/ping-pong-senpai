@@ -1,0 +1,8 @@
+.error-tag {
+  display: none;
+  text-align: center;
+
+  &--show {
+    display: block;
+  }
+}

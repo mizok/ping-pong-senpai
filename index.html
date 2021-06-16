@@ -19,13 +19,33 @@
           <div class="popout__input input-block">
             <input class="input-block__input" id="room-code-input" type="text" placeholder="ROOM CODE">
           </div>
-          <div class="error-tag">error</div>
-          <button class="popout__button button" id="confirm-join-game">CONFIRM</button>
+          <div class="popout__error-tag error-tag">error</div>
+          <div class="popout__btn-wrapper">
+            <button class="popout__button button" id="confirm-join-game">CONFIRM</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="initial-screen__room-code-prompt popout" id="name-input-prompt">
+        <div class="popout__mask"></div>
+        <div class="popout__body">
+          <div class="popout__title">GREETING ! YOUR NAME PLEASE :D ?</div>
+          <div class="popout__input input-block">
+            <input class="input-block__input" id="name-input" type="text" placeholder="YOUR NAME">
+          </div>
+          <div class="popout__error-tag error-tag">error</div>
+          <div class="popout__btn-wrapper">
+            <button class="popout__button button" id="name-confirm">CONFIRM</button>
+          </div>
+
         </div>
       </div>
       <div class="initial-screen__room-code-display popout" id="room-code-display-popout">
         <div class="popout__mask"></div>
         <div class="popout__body">
+          <div class="popout__title popout__title--vice">
+            HI!&nbsp;<span data-role="name"><span>
+          </div>
           <div class="popout__title popout__title--vice">YOUR ROOM CODE IS:</div>
           <h2 id="room-code-display" class="popout__title popout__title--vice"></h2>
           <h4 id="waiting-opponent-msg">WAITING FOR OPPONENT...</h4>
