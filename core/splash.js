@@ -64,7 +64,7 @@ class BasicRefelection extends Canvas2DFxBase {
   animateBall() {
     let $this = this;
     if ($this.ball.afterImage === true) {
-      $this.background('rgba(255,255,255,0.1)');
+      $this.background('rgb(255, 177, 43,0.1)');
     }
     else {
       $this.ctx.clearRect(0, 0, $this.cvs.width, $this.cvs.height);
@@ -178,7 +178,7 @@ export function initSplash() {
     boot(BasicRefelection, BALL_ANIMATION_DEFAULT, {
       afterImage: true,
       radius: 40,
-      color: 'grey',
+      color: 'rgba(0,0,0,0.75)',
       speedX: 1000,
       bottomLayer: instance.cvs,
       speedY: 1000,
