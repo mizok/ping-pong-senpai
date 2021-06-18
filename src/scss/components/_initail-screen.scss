@@ -19,12 +19,16 @@
     display: block;
     text-align: center;
     font-size: 50px;
+    animation: bounceInDown 1s forwards;
   }
 
 
   &__btn-wrapper {
     display: inline-block;
     margin-top: 30px;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+    animation-delay: 0.5s;
 
     >* {
       margin-top: 10px;
@@ -46,5 +50,8 @@
     top: 0;
     left: 0;
     z-index: 1;
+    opacity: 0;
+    animation: fadeIn 2s forwards;
+    animation-delay: 1s;
   }
 }

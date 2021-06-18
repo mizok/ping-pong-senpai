@@ -178,7 +178,7 @@ export function initSplash() {
     boot(BasicRefelection, BALL_ANIMATION_DEFAULT, {
       afterImage: true,
       radius: 40,
-      color: 'rgba(0,0,0,0.75)',
+      color: 'rgba(0, 0, 0,0.75)',
       speedX: 1000,
       bottomLayer: instance.cvs,
       speedY: 1000,
