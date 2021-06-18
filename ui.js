@@ -4,16 +4,19 @@ import { playerRef } from './data'
 
 
 export function initUI(socket) {
+  // status
+  let gameCreated, joined, nameConfirmed, gameStarted;
   // query Elements
-  let createGameBtn = $('#create-game');
-  let showJoinGamePromptBtn = $('#show-join-game-prompt');
-  let confirmJoinGameBtn = $('#confirm-join-game');
+  let createGameBtn = $('#create-game');  //  bindEvent : gameCreated
+  let showJoinGamePromptBtn = $('#show-join-game-prompt'); //  bindEvent
+  let confirmJoinGameBtn = $('#confirm-join-game'); //  bindEvent: joined
   let roomCodeInput = $('#room-code-input');
   let roomCodeDisplay = $('#room-code-display');
   let nameInput = $('#name-input');
-  let nameConfirm = $('#name-confirm');
-  let leaveWaitingBtn = $('#leave-waiting');
-  let leaveGameStartAlert = $('#leave-game-start-alert');
+  let nameConfirm = $('#name-confirm'); //  bindEvent nameConfirmed
+  let leaveWaitingBtn = $('#leave-waiting'); //  bindEvent
+  let leaveGameStartAlert = $('#leave-game-start-alert'); //  bindEvent
+  let gameStart = $('#game-start'); //  bindEvent
 
   // 建立 iniUI Promise 
   let initTrigger;
@@ -39,7 +42,6 @@ export function initUI(socket) {
     ele.addEventListener('click', () => {
       togglePopout(parentPopouts[0].id, false);
     })
-
   })
 
 
@@ -49,13 +51,22 @@ export function initUI(socket) {
 
   //綁定確認送出按鈕的點擊事件
   nameConfirm.addEventListener('click', () => {
+    if (nameConfirmed || gameCreated || joined) return;
     let name = nameInput.value ? nameInput.value : playerRef.name;
     confirmName(socket, name);
     if (flag === 'onJoin') {
       togglePopout('join-game-prompt', true);
     }
     else if (flag === 'onCreate') {
-      newGame(socket);
+      if (!gameCreated) {
+        newGame(socket);
+        gameCreated = true;
+        joined = true;
+        nameConfirmed = true;
+      }
+      else {
+        return
+      }
     }
   })
 
@@ -67,8 +78,16 @@ export function initUI(socket) {
 
   //綁定按鈕點擊後送出想參加的房間碼的事件
   confirmJoinGameBtn.addEventListener('click', () => {
-    let roomCode = roomCodeInput.value;
-    confirmJoinGame(socket, roomCode);
+    if (!joined) {
+      let roomCode = roomCodeInput.value;
+      confirmJoinGame(socket, roomCode);
+      joined = true;
+      gameCreated = true;
+      nameConfirmed = true;
+    }
+    else {
+      return;
+    }
   })
 
   //綁定按鈕點擊後開啟name-input-prompt => newGame prompt
@@ -80,12 +99,25 @@ export function initUI(socket) {
   //綁定第一離開按鈕
   leaveWaitingBtn.addEventListener('click', () => {
     socket.emit('leaveWaiting');
+    gameCreated = false;
+    joined = false;
+    nameConfirmed = false;
     togglePopout('room-code-display-popout', false);
   })
   //綁定第二離開按鈕
   leaveGameStartAlert.addEventListener('click', () => {
     socket.emit('leaveStartingGame', playerRef);
     togglePopout('game-start-alert', false);
+  })
+
+  gameStart.addEventListener('click', () => {
+    if (!gameStarted) {
+      socket.emit('startMatch');
+      gameStarted = true;
+    }
+    else {
+      return
+    }
   })
 
   //綁定當server傳來'genRoomCode'訊號後，ui 應產生的對應行為
@@ -121,6 +153,11 @@ export function initUI(socket) {
   socket.on('host-leave', (data) => {
     togglePopout('game-start-alert', false);
     togglePopout('leave-alert', true);
+    gameStarted = false;
+    joined = false;
+    nameConfirmed = false;
+    gameCreated = false;
+
     $('[data-role="leave-msg"]').innerHTML = `HOST ${data.host} LEFT AND SHUTDOWN THE ROOM.`
   })
 
@@ -128,13 +165,24 @@ export function initUI(socket) {
     togglePopout('game-start-alert', false);
     togglePopout('leave-alert', true);
     togglePopout('room-code-display-popout', true);
+    gameStarted = false;
+    joined = false;
+    nameConfirmed = false;
+    gameCreated = false;
+
     $('[data-role="leave-msg"]').innerHTML = `CHALLENGER ${data.challenger} LEFT THIS MATCH.`
   })
 
+  socket.on('leave', () => {
+    gameStarted = false;
+    joined = false;
+    nameConfirmed = false;
+    gameCreated = false;
+  })
 
   //綁定當server傳來'gameInit'訊號後，ui 應產生的對應行為
   socket.on('gameInit', () => {
-    hideInitialScreen();
+
   })
 
 

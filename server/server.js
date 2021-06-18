@@ -27,11 +27,11 @@ io.on("connection", (client) => {
   client.on('joinGame', (roomCode) => { joinGameHandler(client, roomCode) });
 
 
-
-
   startGameInterval(client, stateStorage);
   // 綁定server 下線事件
-  client.on('disconnect', () => console.log('Client disconnected'));
+  client.on('disconnecting', () => {
+    disconnectHandler(client);
+  });
 });
 
 
@@ -42,6 +42,7 @@ function newGameHandler(client) {
   stateStorage[roomCode] = genGameState();
   client.join(roomCode);
   client.roomId = roomCode;
+  client.number = 1;
   client.emit('playerJoined', {
     playerNumber: 1,
     playerName: client.name
@@ -82,6 +83,7 @@ async function joinGameHandler(client, roomCode) {
   else {
 
     client.join(roomCode);
+    client.number = 2;
     client.roomId = roomCode;
     client.emit('playerJoined', {
       playerNumber: 2,
@@ -98,21 +100,38 @@ async function joinGameHandler(client, roomCode) {
 
 async function leaveStartingGameHandler(data, client) {
   let socketInstances = await io.in(client.roomId).fetchSockets();
-  console.log(data);
   let players = {
     host: client.name,
     challenger: socketInstances[1].name
   }
   if (data.number === 1) {
+    socketInstances[0].emit('leave', players);
     socketInstances[1].emit('host-leave', players);
     closeRoomHandler(client);
   }
   else if (data.number === 2) {
+    socketInstances[1].emit('leave', players);
     socketInstances[0].emit('challenger-leave', players);
     socketInstances[1].leave(client.roomId);
   }
 }
 
+async function disconnectHandler(client) {
+  let socketInstances = await io.in(client.roomId).fetchSockets();
+  let players = {
+    host: client.name,
+    challenger: socketInstances[1].name
+  }
+  if (client.number === 1) {
+    socketInstances[1].emit('host-leave', players);
+    closeRoomHandler(client);
+  }
+  else if (client.number === 2) {
+    socketInstances[0].emit('challenger-leave', players);
+    socketInstances[1].leave(client.roomId);
+  }
+
+}
 
 async function closeRoomHandler(client) {
 
