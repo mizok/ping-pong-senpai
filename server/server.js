@@ -14,7 +14,16 @@ io.on("connection", (client) => {
   client.on('newGame', () => {
     newGameHandler(client)
   });
+
+  client.on('leaveWaiting', async () => {
+    // 關閉該client 所存在的房間,也就是移除所有玩家
+    closeRoomHandler(client);
+  })
+
   client.on('joinGame', (roomCode) => { joinGameHandler(client, roomCode) });
+
+
+
 
   startGameInterval(client, stateStorage);
   // 綁定server 下線事件
@@ -28,6 +37,7 @@ function newGameHandler(client) {
   client.emit('genRoomCode', roomCode);
   stateStorage[roomCode] = genGameState();
   client.join(roomCode);
+  client.roomId = roomCode;
   client.emit('playerJoined', {
     playerNumber: 1,
     playerName: client.name
@@ -72,8 +82,22 @@ async function joinGameHandler(client, roomCode) {
       playerNumber: 2,
       playerName: client.name
     })
-    client.in(roomCode).emit('playerJoined', 2)
+    client.in(roomCode).emit('playerJoined', {
+      playerNumber: 2,
+      playerName: client.name
+    })
   }
+}
+
+
+async function closeRoomHandler(client) {
+
+  let roomId = client.roomId;
+
+  let socketInstances = await io.in(client.roomId).fetchSockets();
+  socketInstances.forEach(socket => {
+    socket.leave(roomId)
+  })
 }
 
 

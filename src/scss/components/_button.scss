@@ -21,4 +21,19 @@
     padding: 0;
     text-decoration: underline;
   }
+
+  &--flex {
+    display: flex;
+  }
+
+  &--flex+&--flex {
+    margin-top: 20px;
+  }
+
+  &--centered {
+    position: relative;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
 }
