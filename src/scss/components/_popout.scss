@@ -1,5 +1,6 @@
 .popout {
   position: fixed;
+  text-align: center;
   width: 100%;
   height: 100%;
   top: 0;
@@ -8,6 +9,7 @@
   align-items: center;
   justify-content: center;
   display: none;
+  z-index: 999;
 
   &--show {
     display: flex;

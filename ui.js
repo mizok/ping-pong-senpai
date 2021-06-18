@@ -1,5 +1,5 @@
 import { $ } from './core/lib/dom';
-import { toggle, toggleClass } from './core/lib/dom';
+import { parents } from './core/lib/dom';
 import { playerRef } from './data'
 
 
@@ -13,11 +13,33 @@ export function initUI(socket) {
   let nameInput = $('#name-input');
   let nameConfirm = $('#name-confirm');
   let leaveWaitingBtn = $('#leave-waiting');
+  let leaveGameStartAlert = $('#leave-game-start-alert');
 
   // 建立 iniUI Promise 
   let initTrigger;
   let initUIPromise = new Promise((res, rej) => {
     initTrigger = res;
+  })
+
+  //...文字
+  setInterval(() => {
+    document.querySelectorAll('[data-role="..."]').forEach(ele => {
+      if (ele.innerHTML.length < 3) {
+        ele.innerHTML += '.'
+      }
+      else {
+        ele.innerHTML = ''
+      }
+    })
+  }, 500)
+
+  //綁定關閉popout
+  document.querySelectorAll('[close-this-popout]').forEach(ele => {
+    let parentPopouts = parents(ele, '.popout');
+    ele.addEventListener('click', () => {
+      togglePopout(parentPopouts[0].id, false);
+    })
+
   })
 
 
@@ -27,7 +49,7 @@ export function initUI(socket) {
 
   //綁定確認送出按鈕的點擊事件
   nameConfirm.addEventListener('click', () => {
-    let name = nameInput.value;
+    let name = nameInput.value ? nameInput.value : playerRef.name;
     confirmName(socket, name);
     if (flag === 'onJoin') {
       togglePopout('join-game-prompt', true);
@@ -55,9 +77,15 @@ export function initUI(socket) {
     togglePopout('name-input-prompt', true);
   });
 
+  //綁定第一離開按鈕
   leaveWaitingBtn.addEventListener('click', () => {
     socket.emit('leaveWaiting');
     togglePopout('room-code-display-popout', false);
+  })
+  //綁定第二離開按鈕
+  leaveGameStartAlert.addEventListener('click', () => {
+    socket.emit('leaveStartingGame', playerRef);
+    togglePopout('game-start-alert', false);
   })
 
   //綁定當server傳來'genRoomCode'訊號後，ui 應產生的對應行為
@@ -70,13 +98,37 @@ export function initUI(socket) {
     if (data.playerNumber === 2) {
       if (playerRef.number == 1) {
         document.querySelectorAll('[data-role="opponent"]').forEach(ele => {
-          ele.innerHTML = data.playerName;
+          ele.innerHTML = `YOUR OPPONENT ${data.playerName} SHOWS UP!`
         });
+        document.querySelectorAll('[data-role="player2"]').forEach(ele => {
+          ele.style.display = 'none';
+        })
       }
-      toggleShowOnFull(true);
-      toggleHideOnFull(false);
+      else if (playerRef.number == 2) {
+        document.querySelectorAll('[data-role="opponent"]').forEach(ele => {
+          ele.innerHTML = `WAITING FOR THE ROOM HOST<br><br>${data.hostName}<br><br>TO ACCEPT YOUR CHALLENGE<span data-role="..."></span>`
+        });
+        document.querySelectorAll('[data-role="player1"]').forEach(ele => {
+          ele.style.display = 'none';
+        })
+      }
+      togglePopout('room-code-display-popout', false);
       togglePopout('join-game-prompt', false);
+      togglePopout('game-start-alert', true);
     }
+  })
+
+  socket.on('host-leave', (data) => {
+    togglePopout('game-start-alert', false);
+    togglePopout('leave-alert', true);
+    $('[data-role="leave-msg"]').innerHTML = `HOST ${data.host} LEFT AND SHUTDOWN THE ROOM.`
+  })
+
+  socket.on('challenger-leave', (data) => {
+    togglePopout('game-start-alert', false);
+    togglePopout('leave-alert', true);
+    togglePopout('room-code-display-popout', true);
+    $('[data-role="leave-msg"]').innerHTML = `CHALLENGER ${data.challenger} LEFT THIS MATCH.`
   })
 
 
@@ -117,13 +169,13 @@ function hideInitialScreen() {
   initialScreen.style.display = 'none';
 }
 /**
- *  開關具有hide-on-full屬性的ui element,
+ *  開關具有hide-on-action屬性的ui element,
  *
  * @param {*} status
  */
-function toggleHideOnFull(status) {
-  document.querySelectorAll('[hide-on-full]').forEach(ele => {
-    ele.setAttribute('hide-on-full', status ? '' : 'hide');
+function toggleHideOnAction(status) {
+  document.querySelectorAll('[hide-on-action]').forEach(ele => {
+    ele.setAttribute('hide-on-action', status ? '' : 'hide');
   })
 }
 /**
@@ -131,9 +183,9 @@ function toggleHideOnFull(status) {
  *
  * @param {*} status
  */
-function toggleShowOnFull(status) {
-  document.querySelectorAll('[show-on-full]').forEach(ele => {
-    ele.setAttribute('show-on-full', status ? '' : 'hide');
+function toggleShowOnAction(status) {
+  document.querySelectorAll('[show-on-action]').forEach(ele => {
+    ele.setAttribute('show-on-action', status ? '' : 'hide');
   })
 }
 

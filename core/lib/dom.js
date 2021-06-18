@@ -17,3 +17,15 @@ export function emit(eventName) {
   someEvent.initEvent(eventName, true, true);
   document.dispatchEvent(someEvent);
 }
+
+export function parents(node, selector) {
+  let current = node,
+    list = [];
+  while (current.parentNode != null && current.parentNode != document.documentElement) {
+    list.push(current.parentNode);
+    current = current.parentNode;
+  }
+  return list.filter((o, i) => {
+    return o.matches(selector)
+  })
+}

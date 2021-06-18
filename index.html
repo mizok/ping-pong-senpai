@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PING PONG SENPAI</title>
+  <title>✪ PING PONG SENPAI ✪</title>
 </head>
 
 <body>
@@ -49,15 +49,28 @@
           <div class="popout__title popout__title--vice">
             HI!&nbsp;<span data-role="name"><span>
           </div>
-          <div class="popout__title popout__title--vice" hide-on-full>YOUR ROOM CODE IS:</div>
-          <h2 id="room-code-display" class="popout__title popout__title--vice" hide-on-full></h2>
-          <h4 id="waiting-opponent-msg" hide-on-full>WAITING FOR OPPONENT...</h4>
-          <h4 show-on-full="hide">YOUR OPPONENT <span data-role="opponent"></span> SHOWS UP!</h4>
-          <div class="popout__deco hourglass" hide-on-full></div>
+          <div class="popout__title popout__title--vice">YOUR ROOM CODE IS:</div>
+          <h2 id="room-code-display" class="popout__title popout__title--vice"></h2>
+          <h4 id="waiting-opponent-msg">WAITING FOR OPPONENT<span data-role="..."></span></h4>
+          <div class="popout__deco hourglass"></div>
           <div class="popout__btn-wrapper">
-            <button class="button button--flex button--centered" id="game-start" show-on-full="hide">START THE
-              MATCH!</button>
             <button class="button button--null button--flex button--centered" id="leave-waiting">LEAVE</button>
+          </div>
+        </div>
+      </div>
+      <div class="initial-screen__game-start-alert popout" id="game-start-alert">
+        <div class="popout__mask"></div>
+        <div class="popout__body">
+          <div class="popout__title popout__title--vice">
+            HI!&nbsp;<span data-role="name"><span>
+          </div>
+          <h4 data-role="opponent"></span>
+          </h4>
+          <div class="popout__deco hourglass" data-role="player2"></div>
+          <div class="popout__btn-wrapper">
+            <button class="button button--flex button--centered" id="game-start" data-role="player1">START THE
+              MATCH!</button>
+            <button class="button button--null button--flex button--centered" id="leave-game-start-alert">LEAVE</button>
           </div>
         </div>
       </div>
@@ -68,8 +81,17 @@
 
     </div>
   </div>
+  <div class="popout" id="leave-alert">
 
+    <div class="popout__mask"></div>
+    <div class="popout__body">
+      <h3 class="popout__title popout__title--vice" data-role="leave-msg"></h3>
+      <div class="popout__btn-wrapper">
+        <button class="button button--flex button--centered" close-this-popout>OK!</button>
+      </div>
+    </div>
 
+  </div>
 </body>
 
 </html>

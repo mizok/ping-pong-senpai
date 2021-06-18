@@ -15,6 +15,10 @@ io.on("connection", (client) => {
     newGameHandler(client)
   });
 
+  client.on('leaveStartingGame', (data) => {
+    leaveStartingGameHandler(data, client);
+  })
+
   client.on('leaveWaiting', async () => {
     // 關閉該client 所存在的房間,也就是移除所有玩家
     closeRoomHandler(client);
@@ -78,14 +82,34 @@ async function joinGameHandler(client, roomCode) {
   else {
 
     client.join(roomCode);
+    client.roomId = roomCode;
     client.emit('playerJoined', {
       playerNumber: 2,
-      playerName: client.name
+      playerName: client.name,
+      hostName: socketInstances[0].name
     })
     client.in(roomCode).emit('playerJoined', {
       playerNumber: 2,
-      playerName: client.name
+      playerName: client.name,
+      hostName: socketInstances[0].name
     })
+  }
+}
+
+async function leaveStartingGameHandler(data, client) {
+  let socketInstances = await io.in(client.roomId).fetchSockets();
+  console.log(data);
+  let players = {
+    host: client.name,
+    challenger: socketInstances[1].name
+  }
+  if (data.number === 1) {
+    socketInstances[1].emit('host-leave', players);
+    closeRoomHandler(client);
+  }
+  else if (data.number === 2) {
+    socketInstances[0].emit('challenger-leave', players);
+    socketInstances[1].leave(client.roomId);
   }
 }
 
