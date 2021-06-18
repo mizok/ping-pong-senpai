@@ -5,3 +5,8 @@
 [show-on-action="hide"] {
   display: none !important;
 }
+
+.promoted {
+  position: relative;
+  z-index: 99999999;
+}

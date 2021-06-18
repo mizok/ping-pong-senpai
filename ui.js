@@ -1,5 +1,5 @@
 import { $ } from './core/lib/dom';
-import { parents } from './core/lib/dom';
+import { parents, fadeOut } from './core/lib/dom';
 import { playerRef } from './data'
 
 
@@ -182,7 +182,7 @@ export function initUI(socket) {
 
   //綁定當server傳來'gameInit'訊號後，ui 應產生的對應行為
   socket.on('gameInit', () => {
-
+    togglePopout('game-start-alert', false);
   })
 
 
@@ -273,4 +273,24 @@ function confirmName(socket, name, cb) {
     o.innerHTML = name;
   })
   togglePopout('name-input-prompt', false);
+}
+
+
+export function startCounting(cb) {
+  let gc = $('#game-start-counting');
+  gc.classList.add('game-start-counting--show');
+  let number = gc.querySelector('.game-start-counting__number');
+  number.innerHTML = 3;
+  let timeInterval = setInterval(() => {
+    if (parseInt(number.innerHTML) > 0) {
+      number.innerHTML = parseInt(number.innerHTML) - 1;
+    }
+    else {
+      clearInterval(timeInterval);
+      fadeOut(gc, 1000, () => {
+        gc.classList.remove('game-start-counting--show');
+      })
+      cb();
+    }
+  }, 1000)
 }

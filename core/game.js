@@ -16,28 +16,13 @@ export class Engine extends Canvas2DFxBase {
     this.radius = 50;
   }
   init() {
-    this.background(this.config.bgColor);
+  }
+  drawCourt() {
+
   }
   draw(data, localData) {
-    this.background(this.config.bgColor);
-    for (let i = 0; i < data.clients.length; i++) {
-      drawCircle(
-        this.ctx,
-        data.clients[i].cursor.x,
-        data.clients[i].cursor.y,
-        this.config.cursor.radius,
-        this.config.cursor.color
-      )
 
-      drawText(
-        this.ctx, `Player${i}`,
-        data.clients[i].cursor.x + this.config.cursor.radius,
-        data.clients[i].cursor.y + this.config.cursor.radius / 2 - 10,
-        '#fff',
-        12,
-        'Arial'
-      )
-    }
+
   }
 }
 

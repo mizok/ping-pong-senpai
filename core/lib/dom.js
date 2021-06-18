@@ -29,3 +29,20 @@ export function parents(node, selector) {
     return o.matches(selector)
   })
 }
+
+export function fadeOut(ele, duration, cb = () => { ele.style.display = 'none'; }) {
+  var fadeTarget = ele;
+  var fadeEffect = setInterval(() => {
+    if (!fadeTarget.style.opacity) {
+      fadeTarget.style.opacity = 1;
+    }
+    if (fadeTarget.style.opacity > 0) {
+      fadeTarget.style.opacity -= 1 / duration;
+    } else {
+      clearInterval(fadeEffect);
+      cb()
+      ele.style.opacity = '';
+
+    }
+  }, 1 / duration);
+}

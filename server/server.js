@@ -26,6 +26,10 @@ io.on("connection", (client) => {
 
   client.on('joinGame', (roomCode) => { joinGameHandler(client, roomCode) });
 
+  client.on('startMatch', () => {
+    startMatchHandler(client);
+  })
+
 
   startGameInterval(client, stateStorage);
   // 綁定server 下線事件
@@ -118,6 +122,7 @@ async function leaveStartingGameHandler(data, client) {
 
 async function disconnectHandler(client) {
   let socketInstances = await io.in(client.roomId).fetchSockets();
+  if (socketInstances.length === 0 || !socketInstances) return;
   let players = {
     host: client.name,
     challenger: socketInstances[1].name
@@ -140,6 +145,14 @@ async function closeRoomHandler(client) {
   let socketInstances = await io.in(client.roomId).fetchSockets();
   socketInstances.forEach(socket => {
     socket.leave(roomId)
+  })
+}
+
+
+async function startMatchHandler(client) {
+  let socketInstances = await io.in(client.roomId).fetchSockets();
+  socketInstances.forEach(client => {
+    client.emit('gameInit');
   })
 }
 

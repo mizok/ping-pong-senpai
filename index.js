@@ -1,4 +1,4 @@
-import { initUI, hideInitialScreen } from './ui';
+import { initUI, startCounting } from './ui';
 import { initSplash } from './core/splash';
 import { gameBuilder } from './core/game';
 
@@ -21,7 +21,22 @@ game.promise.then((instance) => {
 
 
 socket.on('gameInit', () => {
-  gameContoller.drawCourt();
+  startCounting(() => {
+    gameContoller.cvs.classList.add('promoted');
+    gameContoller.drawCourt();
+  })
+})
+
+socket.on('host-leave', () => {
+  gameContoller.cvs.classList.remove('promoted');
+})
+
+socket.on('challenger-leave', () => {
+  gameContoller.cvs.classList.remove('promoted');
+})
+
+socket.on('leave', () => {
+  gameContoller.cvs.classList.remove('promoted');
 })
 
 socket.on('tooManyPlayers', () => {
