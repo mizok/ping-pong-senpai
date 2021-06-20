@@ -17,8 +17,12 @@ uiInitPromise.then(() => {
 
 game.promise.then((instance) => {
   gameContoller = instance;
-})
+  window.kk = () => {
+    gameContoller.cvs.classList.add('promoted');
+    gameContoller.drawGame();
+  }
 
+})
 
 socket.on('gameInit', () => {
   startCounting(() => {

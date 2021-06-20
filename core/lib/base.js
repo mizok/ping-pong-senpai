@@ -19,6 +19,8 @@ export class Canvas2DFxBase {
     this.isClick = false;
     this.canvasSizefixed = false;
     this.previousFrameTime = new Date().getTime();
+    this.isResizing = false;
+    this.isResizingCallback = () => { };
     this.initBase();
   }
   initBase() {
@@ -37,8 +39,14 @@ export class Canvas2DFxBase {
     this.ctx = this.cvs.getContext('2d');
     this.triggerResizingMechanism();
 
+    window.addEventListener('resize', () => {
+      this.isResizing = true;
+      this.isResizingCallback();
+    });
+
     window.addEventListener('resize', debounce(() => {
       this.triggerResizingMechanism();
+      this.isResizing = false;
     }, 500));
 
     window.addEventListener('visibilitychange', () => {
@@ -72,6 +80,13 @@ export class Canvas2DFxBase {
 
   triggerResizingMechanism() {
     if (this.canvasSizefixed) return;
+    let vcvs = document.createElement('canvas');
+    let vctx = vcvs.getContext('2d');
+    vcvs.width = this.cvs.width;
+    vcvs.height = this.cvs.height;
+
+
+    let canvasImageDataBeforeResize = canvasImageDataBeforeResize = this.ctx.getImageData(0, 0, this.cvs.width, this.cvs.height);
     if (this.ele.tagName !== 'CANVAS') {
       let canvasWidth, canvasHeight;
       if (this.virtualParentValidation()) {
@@ -82,8 +97,12 @@ export class Canvas2DFxBase {
         canvasWidth = this.ele.getBoundingClientRect().width;
         canvasHeight = this.ele.getBoundingClientRect().height;
       }
+
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
+
+      vctx.putImageData(canvasImageDataBeforeResize, 0, 0);
+      this.ctx.drawImage(vcvs, 0, 0, canvasWidth, canvasHeight);
 
 
     }
@@ -100,7 +119,13 @@ export class Canvas2DFxBase {
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
 
+      vctx.putImageData(canvasImageDataBeforeResize, 0, 0);
+      this.ctx.drawImage(vcvs, 0, 0, canvasWidth, canvasHeight);
+
     }
+
+    vcvs = undefined;
+    vctx = undefined;
   }
 
   setCanvasSize(width, height) {
