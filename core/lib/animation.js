@@ -1,8 +1,8 @@
-import { randomWithinRange } from './function'
+import { randomWithinRange, calcWaypoints } from './function'
+import 'path2d-polyfill';
 
 export class swirl8Bit {
   constructor(ctx, cvs) {
-    this.inited = false;
     this.counterClockwiseArr = [
       { name: 'tl', x: 0, y: 0 },
       { name: 'bl', x: 0, y: 1 },
@@ -40,7 +40,6 @@ export class swirl8Bit {
       this.animationEndTrigger = res;
     })
     let interval = setInterval(() => {
-      // $this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
       $this.draWRandomAngledBand(
         bandWidth,
         this.cvs.width - 2 * $this.bandWidthStack,
@@ -49,7 +48,7 @@ export class swirl8Bit {
         color,
         clockwise
       );
-      if (this.cvs.width - 2 * $this.bandWidthStack > 0 && this.cvs.height - 2 * $this.bandWidthStack) {
+      if (this.cvs.width - 2 * $this.bandWidthStack > 0 && this.cvs.height - 2 * $this.bandWidthStack > 0) {
 
         if ($this.order < 3) {
           $this.order++
@@ -165,5 +164,45 @@ export class swirl8Bit {
       this.ctx.lineTo(point.x - width, point.y + randomHeight);
       this.ctx.lineTo(point.x - width, point.y);
     }
+  }
+}
+
+export class strokeAnimation {
+  constructor(ctx, vertices) {
+    this.ctx = ctx;
+    this.waypoints = calcWaypoints(vertices);
+  }
+
+  animate(bandWidth = 20, color = 'rgba(0,0,0,1)') {
+    let animationPromise = new Promise((res, rej) => {
+      this.animationEndTrigger = res;
+      this.loopingDrawStroke(bandWidth, color);
+    })
+
+    return animationPromise;
+  }
+
+  loopingDrawStroke(bandWidth, color = 'white', fps = 60) {
+    let counter = 0;
+    let $this = this;
+    this.ctx.save();
+    this.ctx.lineCap = 'round'
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = bandWidth;
+    this.ctx.beginPath();
+    let interval = setInterval(() => {
+      if (counter < $this.waypoints.length - 1) {
+        $this.ctx.moveTo($this.waypoints[counter].x, $this.waypoints[counter].y);
+        $this.ctx.lineTo($this.waypoints[counter + 1].x, $this.waypoints[counter + 1].y);
+        $this.ctx.stroke();
+      }
+      else {
+        clearInterval(interval);
+        $this.ctx.closePath();
+        $this.ctx.restore();
+        $this.animationEndTrigger();
+      }
+      counter++;
+    }, 1000 / fps)
   }
 }

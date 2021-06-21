@@ -140,3 +140,26 @@ export function getChannelValuesFromRgba(rgba) {
   return rgba.replace(/^(rgb|rgba)\(/, '').replace(/\)$/, '').replace(/\s/g, '').split(',').map(x => parseInt(x));
 }
 
+
+
+export function calcWaypoints(vertices, interpolate = 30) {
+  var waypoints = [];
+  for (var i = 1; i < vertices.length; i++) {
+    var pt0 = vertices[i - 1];
+    var pt1 = vertices[i];
+    var dx = pt1.x - pt0.x;
+    var dy = pt1.y - pt0.y;
+    for (var j = 0; j <= interpolate; j++) {
+      var x = pt0.x + dx * j / interpolate;
+      var y = pt0.y + dy * j / interpolate;
+      waypoints.push({
+        x: x,
+        y: y
+      });
+    }
+  }
+
+  console.log(vertices, waypoints)
+
+  return (waypoints);
+}

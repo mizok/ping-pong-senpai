@@ -2,7 +2,7 @@ import { debounce, is, pointerEventToXY } from './function';
 
 export class Canvas2DFxBase {
   constructor(
-    ele, config, defaultConfig, virtualParent
+    ele, config = {}, defaultConfig = {}, virtualParent
   ) {
     config = is.obj(config) ? config : {};
     defaultConfig = is.obj(defaultConfig) ? defaultConfig : {};
@@ -21,6 +21,7 @@ export class Canvas2DFxBase {
     this.previousFrameTime = new Date().getTime();
     this.isResizing = false;
     this.isResizingCallback = () => { };
+    this.resizedCallback = () => { };
     this.initBase();
   }
   initBase() {
@@ -45,8 +46,9 @@ export class Canvas2DFxBase {
     });
 
     window.addEventListener('resize', debounce(() => {
-      this.triggerResizingMechanism();
       this.isResizing = false;
+      this.triggerResizingMechanism();
+      this.resizedCallback();
     }, 500));
 
     window.addEventListener('visibilitychange', () => {
@@ -80,10 +82,10 @@ export class Canvas2DFxBase {
 
   triggerResizingMechanism() {
     if (this.canvasSizefixed) return;
-    let vcvs = document.createElement('canvas');
-    let vctx = vcvs.getContext('2d');
-    vcvs.width = this.cvs.width;
-    vcvs.height = this.cvs.height;
+    let cacheCvs = document.createElement('canvas');
+    let cacheCvsContext = cacheCvs.getContext('2d');
+    cacheCvs.width = this.cvs.width;
+    cacheCvs.height = this.cvs.height;
 
 
     let canvasImageDataBeforeResize = canvasImageDataBeforeResize = this.ctx.getImageData(0, 0, this.cvs.width, this.cvs.height);
@@ -101,8 +103,8 @@ export class Canvas2DFxBase {
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
 
-      vctx.putImageData(canvasImageDataBeforeResize, 0, 0);
-      this.ctx.drawImage(vcvs, 0, 0, canvasWidth, canvasHeight);
+      cacheCvsContext.putImageData(canvasImageDataBeforeResize, 0, 0);
+      this.ctx.drawImage(cacheCvs, 0, 0, canvasWidth, canvasHeight);
 
 
     }
@@ -119,13 +121,13 @@ export class Canvas2DFxBase {
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
 
-      vctx.putImageData(canvasImageDataBeforeResize, 0, 0);
-      this.ctx.drawImage(vcvs, 0, 0, canvasWidth, canvasHeight);
+      cacheCvsContext.putImageData(canvasImageDataBeforeResize, 0, 0);
+      this.ctx.drawImage(cacheCvs, 0, 0, canvasWidth, canvasHeight);
 
     }
 
-    vcvs = undefined;
-    vctx = undefined;
+    cacheCvs = undefined;
+    cacheCvsContext = undefined;
   }
 
   setCanvasSize(width, height) {
@@ -172,6 +174,11 @@ export class Canvas2DFxBase {
     })
   }
 
+  createVirtualCanvas() {
+    let vcvs = document.createElement('canvas');
+    let vcvsInstance = new Canvas2DFxBase(vcvs, {}, {}, this.ele);
+    return vcvsInstance;
+  }
 }
 
 export function boot(ctor, defaultConfig, config, targetEle, virtualParent) {

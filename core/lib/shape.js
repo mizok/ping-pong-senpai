@@ -34,3 +34,4 @@ export function drawText(ctx, textContent = 'text', x, y, color = '#000', fontSi
   ctx.fillText(textContent, x, y);
   ctx.restore();
 }
+
