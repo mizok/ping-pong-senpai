@@ -27,7 +27,7 @@ game.promise.then((instance) => {
 socket.on('gameInit', () => {
   startCounting(() => {
     gameContoller.cvs.classList.add('promoted');
-    gameContoller.drawCourt();
+    gameContoller.drawGame();
   })
 })
 

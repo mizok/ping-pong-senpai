@@ -5,7 +5,7 @@ export function drawSquare(ctx, x, y, width, color, alpha) {
   ctx.fillRect(x - width / 2, y - width / 2, width, width);
   ctx.restore();
 }
-export function drawCircle(ctx, x, y, width, color, alpha) {
+export function drawCircle(ctx, x, y, width, color, alpha = 1) {
   ctx.save()
   ctx.fillStyle = color;
   ctx.globalAlpha = alpha;

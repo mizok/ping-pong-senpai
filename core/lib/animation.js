@@ -1,5 +1,6 @@
 import { randomWithinRange, calcWaypoints } from './function';
 import { getCacheCanvas } from './util';
+import { drawCircle } from './shape';
 import 'path2d-polyfill';
 
 export class Swirl8Bit {
@@ -218,7 +219,30 @@ export class StrokeAnimation {
 }
 
 export class StarSky {
-  constructor(ctx, vertices) {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.cvs = ctx.canvas;
+    this.stars = [];
+    this.init();
+  }
+  init() {
+    this.genStars();
 
+  }
+  genStars(number = 100) {
+    for (let i = 0; i < number; i++) {
+      let star = {
+        x: randomWithinRange(0, this.cvs.width),
+        y: randomWithinRange(0, this.cvs.height),
+        color: `rgba(255,255,255,${randomWithinRange(0.25, 1)})`,
+        size: randomWithinRange(2, 5),
+      }
+      this.stars.push(star);
+    }
+  }
+  draw() {
+    for (let i = 0; i < this.stars.length; i++) {
+      drawCircle(this.ctx, this.stars[i].x, this.stars[i].y, this.stars[i].size, this.stars[i].color);
+    }
   }
 }
