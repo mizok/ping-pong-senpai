@@ -159,7 +159,6 @@ export function calcWaypoints(vertices, interpolate = 30) {
     }
   }
 
-  console.log(vertices, waypoints)
 
   return (waypoints);
 }

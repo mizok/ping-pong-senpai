@@ -88,7 +88,7 @@ export class Canvas2DFxBase {
     cacheCvs.height = this.cvs.height;
 
 
-    let canvasImageDataBeforeResize = canvasImageDataBeforeResize = this.ctx.getImageData(0, 0, this.cvs.width, this.cvs.height);
+
     if (this.ele.tagName !== 'CANVAS') {
       let canvasWidth, canvasHeight;
       if (this.virtualParentValidation()) {
@@ -103,8 +103,6 @@ export class Canvas2DFxBase {
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
 
-      cacheCvsContext.putImageData(canvasImageDataBeforeResize, 0, 0);
-      this.ctx.drawImage(cacheCvs, 0, 0, canvasWidth, canvasHeight);
 
 
     }
@@ -121,13 +119,8 @@ export class Canvas2DFxBase {
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
 
-      cacheCvsContext.putImageData(canvasImageDataBeforeResize, 0, 0);
-      this.ctx.drawImage(cacheCvs, 0, 0, canvasWidth, canvasHeight);
-
     }
 
-    cacheCvs = undefined;
-    cacheCvsContext = undefined;
   }
 
   setCanvasSize(width, height) {
@@ -174,11 +167,12 @@ export class Canvas2DFxBase {
     })
   }
 
-  createVirtualCanvas() {
+  createVirtualCanvasBaseInstance() {
     let vcvs = document.createElement('canvas');
     let vcvsInstance = new Canvas2DFxBase(vcvs, {}, {}, this.ele);
     return vcvsInstance;
   }
+
 }
 
 export function boot(ctor, defaultConfig, config, targetEle, virtualParent) {
