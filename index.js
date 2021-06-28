@@ -5,7 +5,11 @@ import { gameBuilder } from './core/game';
 
 const socket = require('socket.io-client')('http://localhost:3000');
 
-let splash = initSplash();
+let splashSwitcher;
+let splashPromise = initSplash();
+splashPromise.then((switcher) => {
+  splashSwitcher = switcher;
+})
 
 let uiInitPromise = initUI(socket);
 let game = gameBuilder();
@@ -18,18 +22,22 @@ uiInitPromise.then(() => {
 game.promise.then((instance) => {
   gameContoller = instance;
   window.kk = () => {
-    splash.toggle(false);
     gameContoller.cvs.classList.add('promoted');
-    gameContoller.drawGame();
+    let gameReadyPromise = gameContoller.drawGame();
+    gameReadyPromise.then(() => {
+      splashSwitcher(false);
+    })
   }
 
 })
 
 socket.on('gameInit', () => {
   startCounting(() => {
-    splash.toggle(false);
     gameContoller.cvs.classList.add('promoted');
-    gameContoller.drawGame();
+    let gameReadyPromise = gameContoller.drawGame();
+    gameReadyPromise.then(() => {
+      splashSwitcher(false);
+    })
   })
 })
 
@@ -46,15 +54,15 @@ socket.on('leave', () => {
 })
 
 socket.on('tooManyPlayers', () => {
-  alert('該房人數已滿');
+  alert('Room Is Full Now');
 })
 
 socket.on('unknownCode', () => {
-  alert('無效的房間碼');
+  alert('Incorrect Room Code');
 })
 
 socket.on('hostCantBeGuest', () => {
-  alert('房主不能重複加入自己開好的房間喔');
+  alert("You Can't Join The Game You Are Hosting");
 })
 
 

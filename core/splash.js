@@ -29,12 +29,19 @@ const SPOTS_ANIMATION_DEFAULT = {
 class BasicRefelection extends Canvas2DFxBase {
   constructor(canvas, defaultConfig, config, virtualParent) {
     super(canvas, defaultConfig, config, virtualParent);
+    this.switchStatus = false;
     this.init();
   }
   init() {
+    this.switchStatus = true;
     this.initBall();
     this.animateBall();
   }
+
+  switcher(status) {
+    this.switchStatus = status;
+  }
+
   initBall() {
     let $this = this;
     this.ball = {
@@ -63,6 +70,7 @@ class BasicRefelection extends Canvas2DFxBase {
     drawCircle(this.ctx, this.ball.location.x, this.ball.location.y, this.ball.radius * 2, this.ball.color);
   }
   animateBall() {
+    if (this.switchStatus == false) return;
     let $this = this;
     if ($this.ball.afterImage === true) {
       $this.background('rgb(255, 177, 43,0.1)');
@@ -75,7 +83,9 @@ class BasicRefelection extends Canvas2DFxBase {
     $this.refreshLocation();
     $this.refreshSpeed();
     $this.checkBoundary();
-    requestAnimationFrame($this.animateBall.bind($this));
+    requestAnimationFrame(
+      $this.animateBall.bind($this)
+    );
   }
 
   refreshSpeed() {
@@ -128,17 +138,25 @@ class SpotsBumping extends Canvas2DFxBase {
     super(canvas, defaultConfig, config, virtualParent);
     this.spotsSize = this.config.minSize;
     this.expand = true;
+    this.switchStatus = false;
     this.init();
   }
   init() {
+    this.switchStatus = true;
     this.animate();
+  }
+
+  switcher(status) {
+    this.switchStatus = status;
   }
 
   animate() {
     let $this = this;
     this.interval = setInterval(() => {
-      $this.clear();
-      $this.drawSpots();
+      if (this.switchStatus) {
+        $this.clear();
+        $this.drawSpots();
+      }
     }, this.config.period)
   }
 
@@ -173,23 +191,35 @@ class SpotsBumping extends Canvas2DFxBase {
 export function initSplash() {
   let initialScreen = $('#initial-screen');
   let virtualCanvas = document.createElement('canvas');
-
+  let switcher;
   let spotAnimation = boot(SpotsBumping, SPOTS_ANIMATION_DEFAULT, {}, virtualCanvas, initialScreen);
-  spotAnimation.promise.then((instance) => {
-    boot(BasicRefelection, BALL_ANIMATION_DEFAULT, {
+  let splashPromise = spotAnimation.promise.then((spotsBumpingInstance) => {
+    let bootController = boot(BasicRefelection, BALL_ANIMATION_DEFAULT, {
       afterImage: true,
       radius: 40,
       color: 'rgba(0, 0, 0,0.75)',
       speedX: 1000,
-      bottomLayer: instance.cvs,
+      bottomLayer: spotsBumpingInstance.cvs,
       speedY: 1000,
       accelerationX: 0,
       accelerationY: 980,
       frictionX: 1,
-    }, initialScreen).trigger();
-  });
-  spotAnimation.toggle = (status) => { toggle('#initial-screen', status) };
+    }, initialScreen);
+
+    bootController.trigger();
+
+    return bootController.promise.then((basicRefelectionInstance) => {
+      return new Promise(res => {
+        switcher = (status) => {
+          spotsBumpingInstance.switcher(status);
+          basicRefelectionInstance.switcher(status);
+        }
+        res(switcher);
+      })
+    })
+  })
   spotAnimation.trigger();
-  return spotAnimation;
+
+  return splashPromise;
 }
 
