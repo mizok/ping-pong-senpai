@@ -175,20 +175,23 @@ export class StrokeAnimation {
     this.waypoints = calcWaypoints(vertices);
   }
 
-  animate(bandWidth = 20, color = 'rgba(255,255,255,1)', glowing = 'transparent', glowingSize = 40, flicker = true) {
+  animate(bandWidth = 20, color = 'rgba(255,255,255,1)', flicker = true, dash = [], glowing = 'white', glowingSize = 40) {
     let animationPromise = new Promise((res, rej) => {
       this.animationEndTrigger = res;
-      this.loopingDrawStroke(bandWidth, color, glowing, glowingSize, flicker);
+      this.loopingDrawStroke(bandWidth, color, flicker, dash, glowing, glowingSize,);
     })
 
     return animationPromise;
   }
 
-  loopingDrawStroke(bandWidth, color, glowing, glowingSize, flicker, fps = 60) {
+  loopingDrawStroke(bandWidth, color, flicker, dash, glowing, glowingSize, fps = 60) {
     let counter = 0;
     let $this = this;
     this.ctx.save();
-    this.ctx.lineCap = 'round'
+    this.ctx.lineCap = 'square'
+    if (dash.length > 0) {
+      this.ctx.setLineDash(dash);
+    }
     this.ctx.strokeStyle = color;
     this.ctx.lineWidth = bandWidth;
     this.ctx.shadowColor = glowing;
@@ -200,8 +203,8 @@ export class StrokeAnimation {
       if (counter < $this.waypoints.length - 1) {
         $this.ctx.moveTo($this.waypoints[counter].x, $this.waypoints[counter].y);
         $this.ctx.lineTo($this.waypoints[counter + 1].x, $this.waypoints[counter + 1].y);
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         if (flicker) {
+          this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
           this.ctx.globalAlpha = randomWithinRange(flickerRange, 1);
           flickerRange += (fps / 10000);
         }

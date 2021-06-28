@@ -189,7 +189,7 @@ export function boot(ctor, defaultConfig, config, targetEle, virtualParent) {
 
   let controller = {
     promise: bootPromise,
-    trigger: trigger
+    trigger: trigger,
   }
 
   return controller;

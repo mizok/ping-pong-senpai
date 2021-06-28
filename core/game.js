@@ -209,7 +209,13 @@ export class Engine extends Canvas2DFxBase {
     let court = {
       animate: () => {
         court.initialImage = getCacheCanvas(this.ctx);
-        let promise = strokeAnimationInstance.animate(strokeWidth, this.config.courtColor);
+        let promise = strokeAnimationInstance.animate(strokeWidth, this.config.courtColor).then(() => {
+          let vertices = [
+            { x: 0, y: courtCanvasInstance.cvs.height / 2 },
+            { x: courtCanvasInstance.cvs.width, y: courtCanvasInstance.cvs.height / 2 },
+          ]
+          return new StrokeAnimation(courtCanvasInstance.ctx, vertices).animate(strokeWidth, this.config.courtColor, false, [10, 30], 'transparent');
+        });
         let interval = setInterval(() => {
           paint(courtCanvasInstance.cvs, court.initialImage);
         }, 30)
@@ -239,13 +245,9 @@ export class Engine extends Canvas2DFxBase {
       .then(() => {
         return this.court.animate();
       }).then(() => {
+        return this.players.kickoff();
       })
   }
-
-  drawResponsiveCourt() {
-
-  }
-
 
 
 }

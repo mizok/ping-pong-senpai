@@ -5,7 +5,7 @@ import { gameBuilder } from './core/game';
 
 const socket = require('socket.io-client')('http://localhost:3000');
 
-initSplash();
+let splash = initSplash();
 
 let uiInitPromise = initUI(socket);
 let game = gameBuilder();
@@ -18,6 +18,7 @@ uiInitPromise.then(() => {
 game.promise.then((instance) => {
   gameContoller = instance;
   window.kk = () => {
+    splash.toggle(false);
     gameContoller.cvs.classList.add('promoted');
     gameContoller.drawGame();
   }
@@ -26,6 +27,7 @@ game.promise.then((instance) => {
 
 socket.on('gameInit', () => {
   startCounting(() => {
+    splash.toggle(false);
     gameContoller.cvs.classList.add('promoted');
     gameContoller.drawGame();
   })

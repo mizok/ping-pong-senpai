@@ -1,6 +1,7 @@
 import { Canvas2DFxBase, boot } from './lib/base';
 import { drawCircle } from './lib/shape';
 import { $ } from './lib/dom'
+import { toggle } from './lib/dom';
 
 const BALL_ANIMATION_DEFAULT = {
   afterImage: false,
@@ -187,6 +188,8 @@ export function initSplash() {
       frictionX: 1,
     }, initialScreen).trigger();
   });
+  spotAnimation.toggle = (status) => { toggle('#initial-screen', status) };
   spotAnimation.trigger();
+  return spotAnimation;
 }
 
