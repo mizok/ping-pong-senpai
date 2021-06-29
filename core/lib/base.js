@@ -20,6 +20,7 @@ export class Canvas2DFxBase {
     this.canvasSizefixed = false;
     this.previousFrameTime = new Date().getTime();
     this.isResizing = false;
+    this.layers = [];
     this.isResizingCallback = () => { };
     this.resizedCallback = () => { };
     this.initBase();
@@ -28,8 +29,10 @@ export class Canvas2DFxBase {
 
     if (this.ele.tagName !== 'CANVAS') {
       const cvs = document.createElement('canvas');
-
-      this.ele.appendChild(cvs);
+      this.layersContainer = document.createElement('div');
+      this.layersContainer.classList.add('layers-container');
+      this.layersContainer.appendChild(cvs);
+      this.ele.appendChild(this.layersContainer);
 
       this.cvs = cvs;
     }
@@ -171,6 +174,19 @@ export class Canvas2DFxBase {
     let vcvs = document.createElement('canvas');
     let vcvsInstance = new Canvas2DFxBase(vcvs, {}, {}, this.ele);
     return vcvsInstance;
+  }
+
+  addNewLayer() {
+    let cvs = document.createElement('canvas');
+    cvs.style.position = 'absolute';
+    let parentPosition = window.getComputedStyle(this.cvs.parentNode).getPropertyValue('position');
+    if (parentPosition === 'static') {
+      this.cvs.parentNode.style.position = 'relative';
+    }
+    this.cvs.parentNode.insertBefore(cvs, this.cvs);
+    let cvsInstance = new Canvas2DFxBase(cvs, {}, {}, this.ele);
+    this.layers.push(cvsInstance);
+    return cvsInstance;
   }
 
 }

@@ -3,6 +3,7 @@ import { StrokeAnimation, Swirl8Bit, StarSky } from './lib/animation';
 import { getCacheCanvas } from './lib/util';
 import { playersData, ball } from '../data';
 import { drawRect, drawCircle } from './lib/shape'
+import { randomWithinRange } from './lib/function';
 
 const DEFAULT = {
   bgColor: 'rgba(0,0,0,1)',
@@ -15,8 +16,8 @@ export class Engine extends Canvas2DFxBase {
     super(ele, defaultConfig, config)
     this.pixelBase = 1440;
     this.init();
-    this.fps = 30,
-      this.courtOffset = 65;
+    this.fps = 30;
+    this.courtOffset = 65;
     this.gameStatus = 0;
     this.pause = false;
     //0: not start yet
@@ -29,7 +30,7 @@ export class Engine extends Canvas2DFxBase {
   init() {
     this.curtain = this.genCurtain();
     this.court = this.genCourt();
-    this.starSky = new StarSky(this.ctx);
+    this.starSky = this.genStarSky();
     this.players = this.genPlayers();
     this.scoreboards = this.genScoreboards();
     this.ball = this.genBall();
@@ -43,7 +44,6 @@ export class Engine extends Canvas2DFxBase {
           if (this.gameStatus === 3) {
             this.background('black');
           }
-          this.starSky.draw();
           this.court.drawStatic();
         })
     }
@@ -61,7 +61,6 @@ export class Engine extends Canvas2DFxBase {
           this.clear();
           this.ctx.drawImage(initialImage, 0, 0, this.cvs.width, this.cvs.height, 0, 0, this.cvs.width, this.cvs.height);
           this.ctx.drawImage(curtainCanvasInstance.cvs, 0, 0, curtainCanvasInstance.cvs.width, curtainCanvasInstance.cvs.height, 0, 0, this.cvs.width, this.cvs.height);
-          this.starSky.draw();
         }, this.fps);
         return promise.then(() => {
           return new Promise((res) => {
@@ -100,32 +99,32 @@ export class Engine extends Canvas2DFxBase {
     return this.cvs.width / this.cvs.height;
   }
 
-  responsivePainter(targetCvs, initialImage) {
+  responsivePainter(targetLayer, sourceCanvas, initialImage) {
     let offset = this.courtOffset;
-    this.ctx.save();
+    targetLayer.ctx.save();
     //畫court 會有四種狀況, (canvas長寬>預設長寬比>1) | (1<=canvas長寬<預設長寬比) | (預設長寬比倒數<canvas長寬比<1) ｜ (canvas長寬比<預設長寬比倒數<1)
     if (this.getAspectRatio() >= 1) {
       // 這邊是前兩種狀況
       //先清除一次之後畫initialImage , 再畫court
-      this.clear();
-      let typeA = (this.cvs.height - 2 * offset) * this.config.courtAspectRatio < this.cvs.width - 2 * offset;
+      targetLayer.clear();
+      let typeA = (targetLayer.cvs.height - 2 * offset) * this.config.courtAspectRatio < targetLayer.cvs.width - 2 * offset;
       let offsetV, offsetH, courtHeight, courtWidth;
       if (typeA) {
         // 先算出縮減過offset 的cvs 寬
         offsetV = offset;
-        courtHeight = this.cvs.height - 2 * offset;
+        courtHeight = targetLayer.cvs.height - 2 * offset;
         courtWidth = courtHeight * this.config.courtAspectRatio;
-        offsetH = (this.cvs.width - courtWidth) / 2;
+        offsetH = (targetLayer.cvs.width - courtWidth) / 2;
       }
       else {
         // 非typeA的狀況, 也就是canvas寬高比低於config 設定的比例
         offsetH = offset;
-        courtWidth = this.cvs.width - 2 * offset;
+        courtWidth = targetLayer.cvs.width - 2 * offset;
         courtHeight = courtWidth / this.config.courtAspectRatio;
-        offsetV = (this.cvs.height - courtHeight) / 2;
+        offsetV = (targetLayer.cvs.height - courtHeight) / 2;
       }
       if (initialImage) {
-        this.ctx.drawImage(
+        targetLayer.ctx.drawImage(
           initialImage,
           0,
           0,
@@ -133,23 +132,23 @@ export class Engine extends Canvas2DFxBase {
           initialImage.height,
           0,
           0,
-          this.cvs.width,
-          this.cvs.height
+          targetLayer.cvs.width,
+          targetLayer.cvs.height
         )
 
       }
       // 先旋轉畫布, 因為 virtualcanvas 是一張垂直的畫布
-      this.ctx.translate(this.cvs.width / 2, this.cvs.height / 2);
-      this.ctx.rotate(Math.PI / 2);
-      this.ctx.translate(-this.cvs.height / 2, -this.cvs.width / 2);
+      targetLayer.ctx.translate(targetLayer.cvs.width / 2, targetLayer.cvs.height / 2);
+      targetLayer.ctx.rotate(Math.PI / 2);
+      targetLayer.ctx.translate(-targetLayer.cvs.height / 2, -targetLayer.cvs.width / 2);
       // 因為court 的大小會隨著canvas 的長寬比而變動
       // 這邊先 假設今天是canvas 寬比高超出很多的情況 , 也就是狀況"typeA"
-      this.ctx.drawImage(
-        targetCvs,
+      targetLayer.ctx.drawImage(
+        sourceCanvas,
         0,
         0,
-        targetCvs.width,
-        targetCvs.height,
+        sourceCanvas.width,
+        sourceCanvas.height,
         offsetV,
         offsetH,
         courtHeight,
@@ -160,24 +159,24 @@ export class Engine extends Canvas2DFxBase {
       //這邊是後兩種狀況
       // 因為court 的大小會隨著canvas 的長寬比而變動
       // 這邊先 假設今天是canvas 高比寬比超出很多的情況 , 也就是狀況"typeA"
-      let typeA = (this.cvs.width - 2 * offset) * this.config.courtAspectRatio < this.cvs.height - 2 * offset;
+      let typeA = (targetLayer.cvs.width - 2 * offset) * this.config.courtAspectRatio < targetLayer.cvs.height - 2 * offset;
       let offsetV, offsetH, courtHeight, courtWidth;
       if (typeA) {
         // 先算出縮減過offset 的cvs 寬
         offsetH = offset;
-        courtWidth = this.cvs.width - 2 * offset;
+        courtWidth = targetLayer.cvs.width - 2 * offset;
         courtHeight = courtWidth * this.config.courtAspectRatio;
-        offsetV = (this.cvs.height - courtHeight) / 2;
+        offsetV = (targetLayer.cvs.height - courtHeight) / 2;
       }
       else {
         // 非typeA的狀況, 也就是canvas寬高比低於config 設定的比例
         offsetV = offset;
-        courtHeight = this.cvs.height - 2 * offset;
+        courtHeight = targetLayer.cvs.height - 2 * offset;
         courtWidth = courtHeight / this.config.courtAspectRatio;
-        offsetH = (this.cvs.width - courtWidth) / 2;
+        offsetH = (targetLayer.cvs.width - courtWidth) / 2;
       }
       if (initialImage) {
-        this.ctx.drawImage(
+        targetLayer.ctx.drawImage(
           initialImage,
           0,
           0,
@@ -185,16 +184,16 @@ export class Engine extends Canvas2DFxBase {
           initialImage.height,
           0,
           0,
-          this.cvs.width,
-          this.cvs.height
+          targetLayer.cvs.width,
+          targetLayer.cvs.height
         )
       }
-      this.ctx.drawImage(
-        targetCvs,
+      targetLayer.ctx.drawImage(
+        sourceCanvas,
         0,
         0,
-        targetCvs.width,
-        targetCvs.height,
+        sourceCanvas.width,
+        sourceCanvas.height,
         offsetH,
         offsetV,
         courtWidth,
@@ -202,7 +201,7 @@ export class Engine extends Canvas2DFxBase {
       )
     }
 
-    this.ctx.restore();
+    targetLayer.ctx.restore();
   }
 
   genCourt(strokeWidth = 10, offset = 65) {
@@ -231,7 +230,7 @@ export class Engine extends Canvas2DFxBase {
           return new StrokeAnimation(courtCanvasInstance.ctx, vertices).animate(strokeWidth, this.config.courtColor, false, [10, 30], 'transparent');
         });
         let interval = setInterval(() => {
-          this.responsivePainter(courtCanvasInstance.cvs, court.initialImage);
+          this.responsivePainter(this, courtCanvasInstance.cvs, court.initialImage);
         }, this.fps)
         return promise.then(() => {
           return new Promise((res) => {
@@ -245,7 +244,7 @@ export class Engine extends Canvas2DFxBase {
       },
       drawStatic: () => {
         return new Promise((res, rej) => {
-          this.responsivePainter(courtCanvasInstance.cvs, court.initialImage);
+          this.responsivePainter(this, courtCanvasInstance.cvs, court.initialImage);
           res();
         })
       }
@@ -254,9 +253,16 @@ export class Engine extends Canvas2DFxBase {
     return court;
   }
 
+  genStarSky() {
+    let starSkyCanvasInstance = this.starSkyCanvasInstance = this.addNewLayer();
+    return new StarSky(starSkyCanvasInstance.ctx);
+  }
+
+
   genPlayers(widthPram = 10, gapRatio = 0.05, color = 'white', thickness = 20) {
-    let playersCanvasInstance = this.playersCanvasInstance = this.createVirtualCanvasBaseInstance();
-    playersCanvasInstance.setCanvasSize(this.courtCanvasInstance.cvs.width, this.courtCanvasInstance.cvs.height);
+    let playersCanvasInstance = this.playersCanvasInstance = this.addNewLayer();
+    let playersVirtualCanvasInstance = this.playersVirtualCanvasInstance = this.createVirtualCanvasBaseInstance();
+    playersVirtualCanvasInstance.setCanvasSize(this.courtCanvasInstance.cvs.width, this.courtCanvasInstance.cvs.height);
 
     for (let i = 0; i < playersData.length; i++) {
       playersData[i].width = (this.pixelBase / this.config.courtAspectRatio) / widthPram;
@@ -275,29 +281,27 @@ export class Engine extends Canvas2DFxBase {
           trigger = res;
         })
         let opacity = 0;
-        let initialImage = getCacheCanvas(this.ctx);
         let interval = setInterval(() => {
           if (opacity >= 1) {
             clearInterval(interval);
             trigger();
           }
           for (let i = 0; i < playersData.length; i++) {
-            drawRect(playersCanvasInstance.ctx, playersData[i].position.x, playersData[i].position.y, playersData[i].width, thickness, color, opacity);
+            drawRect(playersVirtualCanvasInstance.ctx, playersData[i].position.x, playersData[i].position.y, playersData[i].width, thickness, color, opacity);
           }
-          this.responsivePainter(playersCanvasInstance.cvs, initialImage);
+          this.responsivePainter(playersCanvasInstance, playersVirtualCanvasInstance.cvs);
           opacity += 0.01;
         }, this.fps)
         return promise;
       },
 
       loopUpdate: () => {
-        let initialImage = getCacheCanvas(this.ctx);
         let interval = setInterval(() => {
+          playersVirtualCanvasInstance.clear();
           for (let i = 0; i < playersData.length; i++) {
-            playersCanvasInstance.clear();
-            drawRect(playersCanvasInstance.ctx, playersData[i].position.x, playersData[i].position.y, playersData[i].width, thickness, color, 1);
+            drawRect(playersVirtualCanvasInstance.ctx, playersData[i].position.x, playersData[i].position.y, playersData[i].width, thickness, color, 1);
           }
-          this.responsivePainter(playersCanvasInstance.cvs, initialImage);
+          this.responsivePainter(playersCanvasInstance, playersVirtualCanvasInstance.cvs);
         }, this.fps)
       }
     }
@@ -316,6 +320,7 @@ export class Engine extends Canvas2DFxBase {
 
   drawGame() {
     this.gameStatus = 1;
+    this.starSky.animate();
     let promise = this.curtain.animate();
     promise
       .then(() => {

@@ -239,13 +239,22 @@ export class StarSky {
         y: randomWithinRange(0, this.cvs.height),
         color: `rgba(255,255,255,${randomWithinRange(0.25, 1)})`,
         size: randomWithinRange(2, 5),
+        twinkle: () => {
+          star.color = `rgba(255,255,255,${randomWithinRange(0.25, 1)})`;
+        }
       }
       this.stars.push(star);
     }
   }
-  draw() {
-    for (let i = 0; i < this.stars.length; i++) {
-      drawCircle(this.ctx, this.stars[i].x, this.stars[i].y, this.stars[i].size, this.stars[i].color);
+  animate() {
+    let draw = () => {
+      this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
+      for (let i = 0; i < this.stars.length; i++) {
+        this.stars[i].twinkle();
+        drawCircle(this.ctx, this.stars[i].x, this.stars[i].y, this.stars[i].size, this.stars[i].color);
+      }
     }
+
+    setInterval(draw, 500);
   }
 }

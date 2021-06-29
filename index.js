@@ -21,8 +21,8 @@ uiInitPromise.then(() => {
 
 game.promise.then((instance) => {
   gameContoller = instance;
-  window.kk = () => {
-    gameContoller.cvs.classList.add('promoted');
+  window.go = () => {
+    gameContoller.layersContainer.classList.add('promoted');
     let gameReadyPromise = gameContoller.drawGame();
     gameReadyPromise.then(() => {
       splashSwitcher(false);
@@ -33,7 +33,7 @@ game.promise.then((instance) => {
 
 socket.on('gameInit', () => {
   startCounting(() => {
-    gameContoller.cvs.classList.add('promoted');
+    gameContoller.layersContainer.classList.add('promoted');
     let gameReadyPromise = gameContoller.drawGame();
     gameReadyPromise.then(() => {
       splashSwitcher(false);
