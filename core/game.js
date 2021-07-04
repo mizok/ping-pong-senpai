@@ -1,7 +1,7 @@
 import { Canvas2DFxBase, boot } from './lib/base';
 import { StrokeAnimation, Swirl8Bit, StarSky } from './lib/animation';
 import { getCacheCanvas } from './lib/util';
-import { playersData, ball } from '../data';
+import { playersData, ballData } from '../data';
 import { drawRect, drawCircle } from './lib/shape'
 import { randomWithinRange } from './lib/function';
 
@@ -17,9 +17,10 @@ export class Engine extends Canvas2DFxBase {
     this.pixelBase = 1440;
     this.init();
     this.fps = 30;
-    this.courtOffset = 65;
+    this.courtOffset = 100;
     this.gameStatus = 0;
     this.pause = false;
+    this.playersThickness = 20;
     //0: not start yet
     //1: curtain animating
     //2: court animating
@@ -28,12 +29,12 @@ export class Engine extends Canvas2DFxBase {
   }
 
   init() {
-    this.curtain = this.genCurtain();
-    this.court = this.genCourt();
-    this.starSky = this.genStarSky();
-    this.players = this.genPlayers();
-    this.scoreboards = this.genScoreboards();
-    this.ball = this.genBall();
+    this.curtain = this.genCurtain();// 最底層canvas
+    this.court = this.genCourt();//最底層canvas
+    this.starSky = this.genStarSky();//倒數第二層canvas
+    this.players = this.genPlayers();//倒數第三層canvas
+    this.ball = this.genBall();//倒數第四層canvas
+    this.scoreboards = this.genScoreboards();//最表層canvas
     this.initResized();
   }
 
@@ -139,7 +140,7 @@ export class Engine extends Canvas2DFxBase {
       }
       // 先旋轉畫布, 因為 virtualcanvas 是一張垂直的畫布
       targetLayer.ctx.translate(targetLayer.cvs.width / 2, targetLayer.cvs.height / 2);
-      targetLayer.ctx.rotate(Math.PI / 2);
+      targetLayer.ctx.rotate(-Math.PI / 2);
       targetLayer.ctx.translate(-targetLayer.cvs.height / 2, -targetLayer.cvs.width / 2);
       // 因為court 的大小會隨著canvas 的長寬比而變動
       // 這邊先 假設今天是canvas 寬比高超出很多的情況 , 也就是狀況"typeA"
@@ -204,7 +205,7 @@ export class Engine extends Canvas2DFxBase {
     targetLayer.ctx.restore();
   }
 
-  genCourt(strokeWidth = 10, offset = 65) {
+  genCourt(strokeWidth = 10) {
     let courtCanvasInstance = this.courtCanvasInstance = this.createVirtualCanvasBaseInstance();
     let courtCanvasWidth = this.pixelBase / this.config.courtAspectRatio;
     let courtCanvasHeight = this.pixelBase;
@@ -255,11 +256,14 @@ export class Engine extends Canvas2DFxBase {
 
   genStarSky() {
     let starSkyCanvasInstance = this.starSkyCanvasInstance = this.addNewLayer();
-    return new StarSky(starSkyCanvasInstance.ctx);
+    let starSkyAnimationInstance = new StarSky(starSkyCanvasInstance.ctx);
+    starSkyCanvasInstance.resizedCallback = starSkyAnimationInstance.refreshStars.bind(starSkyAnimationInstance);
+    return starSkyAnimationInstance;
   }
 
 
   genPlayers(widthPram = 10, gapRatio = 0.05, color = 'white', thickness = 20) {
+    this.playersThickness = thickness;
     let playersCanvasInstance = this.playersCanvasInstance = this.addNewLayer();
     let playersVirtualCanvasInstance = this.playersVirtualCanvasInstance = this.createVirtualCanvasBaseInstance();
     playersVirtualCanvasInstance.setCanvasSize(this.courtCanvasInstance.cvs.width, this.courtCanvasInstance.cvs.height);
@@ -310,11 +314,55 @@ export class Engine extends Canvas2DFxBase {
   }
 
   genScoreboards() {
-    let scoreboardsCanvasInstance = this.scoreboardsCanvasInstance = this.createVirtualCanvasBaseInstance();
   }
 
-  genBall() {
-    let ballCanvasInstance = this.ballCanvasInstance = this.createVirtualCanvasBaseInstance();
+  genBall(speed = 100, size = 30, color = 'white') {
+    let ballCanvasInstance = this.ballCanvasInstance = this.addNewLayer();
+    let ballVirtualCanvasInstance = this.ballVirtualCanvasInstance = this.createVirtualCanvasBaseInstance();
+    ballVirtualCanvasInstance.setCanvasSize(this.courtCanvasInstance.cvs.width, this.courtCanvasInstance.cvs.height);
+
+    //init ballData
+
+    ballData.speed = {
+      x: randomWithinRange(0, speed),
+      y: randomWithinRange(0, speed)
+    }
+    ballData.size = size;
+    ballData.color = color;
+    ballData.position = {
+      x: playersData[0].position.x, //房主先持球
+      y: playersData[0].position.y - this.playersThickness - 10
+    };
+
+    let ball = {
+      ready: () => {
+        let trigger;
+        let promise = new Promise(res => {
+          trigger = res;
+        })
+        let opacity = 0;
+        setTimeout(() => {
+          let interval = setInterval(() => {
+            if (opacity >= 1) {
+              clearInterval(interval);
+              trigger();
+            }
+            drawCircle(ballVirtualCanvasInstance.ctx, ballData.position.x, ballData.position.y, ballData.size, ballData.color, opacity);
+            this.responsivePainter(ballCanvasInstance, ballVirtualCanvasInstance.cvs);
+
+            opacity += 0.01;
+          }, this.fps)
+        }, 500)
+        return promise;
+      },
+      loopUpdate: () => {
+        let interval = setInterval(() => {
+          ballVirtualCanvasInstance.clear();
+          drawCircle(ballVirtualCanvasInstance.ctx, ballData.position.x, ballData.position.y, ballData.size, ballData.color);
+          this.responsivePainter(ballCanvasInstance, ballVirtualCanvasInstance.cvs);
+        }, this.fps)
+      }
+    }
     return ball;
   }
 
@@ -330,8 +378,10 @@ export class Engine extends Canvas2DFxBase {
       .then(() => {
         this.gameStatus = 3;
         let playersReady = this.players.ready();
+        let ballReady = this.ball.ready();
+        let scoreboardsReady = this.scoreboards.ready();
         let allReadyPromise = Promise.all([
-          playersReady
+          playersReady, ballReady, scoreboardsReady
         ])
         return allReadyPromise;
       })
@@ -348,6 +398,8 @@ export class Engine extends Canvas2DFxBase {
 
   initGameDataUpdateInterval() {
     this.players.loopUpdate();
+    this.ball.loopUpdate();
+    this.scoreboards.loopUpdate();
   }
 
 

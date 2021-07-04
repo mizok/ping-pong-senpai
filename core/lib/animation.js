@@ -246,6 +246,10 @@ export class StarSky {
       this.stars.push(star);
     }
   }
+  refreshStars() {
+    this.stars.length = 0;
+    this.genStars();
+  }
   animate() {
     let draw = () => {
       this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);

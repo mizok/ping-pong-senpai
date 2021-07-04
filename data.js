@@ -1,24 +1,6 @@
-// export const scoreboards = [
-//   {
-//     position: {
-//       x: 0,
-//       y: 0
-//     },
-//     show: () => { },
-//     update: () => { }
-//   },
-//   {
-//     position: {
-//       x: 0,
-//       y: 0
-//     },
-//     show: () => { },
-//     update: () => { }
-//   }
-// ]
-
 export const playersData = [
   {
+    id: 0,
     name: '???',
     score: 0,
     width: 0,
@@ -28,6 +10,7 @@ export const playersData = [
     }
   },
   {
+    id: 1,
     name: '???',
     score: 0,
     width: 0,
@@ -38,7 +21,7 @@ export const playersData = [
   }
 ];
 
-export const ball = {
+export const ballData = {
   position: {
     x: 0,
     y: 0

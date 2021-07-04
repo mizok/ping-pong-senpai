@@ -1,5 +1,6 @@
 import { debounce, is, pointerEventToXY } from './function';
 
+
 export class Canvas2DFxBase {
   constructor(
     ele, config = {}, defaultConfig = {}, virtualParent
@@ -17,6 +18,7 @@ export class Canvas2DFxBase {
     this.ctx = null;
     this.frameIsPaused = false;
     this.isClick = false;
+    this.layersContainer = undefined;
     this.canvasSizefixed = false;
     this.previousFrameTime = new Date().getTime();
     this.isResizing = false;
@@ -33,7 +35,6 @@ export class Canvas2DFxBase {
       this.layersContainer.classList.add('layers-container');
       this.layersContainer.appendChild(cvs);
       this.ele.appendChild(this.layersContainer);
-
       this.cvs = cvs;
     }
     else {
@@ -85,12 +86,6 @@ export class Canvas2DFxBase {
 
   triggerResizingMechanism() {
     if (this.canvasSizefixed) return;
-    let cacheCvs = document.createElement('canvas');
-    let cacheCvsContext = cacheCvs.getContext('2d');
-    cacheCvs.width = this.cvs.width;
-    cacheCvs.height = this.cvs.height;
-
-
 
     if (this.ele.tagName !== 'CANVAS') {
       let canvasWidth, canvasHeight;
@@ -105,8 +100,6 @@ export class Canvas2DFxBase {
 
       this.cvs.width = canvasWidth;
       this.cvs.height = canvasHeight;
-
-
 
     }
     else {
@@ -189,6 +182,18 @@ export class Canvas2DFxBase {
     return cvsInstance;
   }
 
+  addDivLayer() {
+    let divLayer = document.createElement('div');
+    divLayer.style.position = 'absolute';
+    let parentPosition = window.getComputedStyle(this.divLayer.parentNode).getPropertyValue('position');
+    if (parentPosition === 'static') {
+      this.divLayer.parentNode.style.position = 'relative';
+    }
+    this.divLayer.parentNode.insertBefore(divLayer, this.divLayer);
+    let cvsInstance = new Canvas2DFxBase(divLayer, {}, {}, this.ele);
+    this.layers.push(cvsInstance);
+    return cvsInstance;
+  }
 }
 
 export function boot(ctor, defaultConfig, config, targetEle, virtualParent) {
