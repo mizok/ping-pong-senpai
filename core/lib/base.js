@@ -19,10 +19,12 @@ export class Canvas2DFxBase {
     this.frameIsPaused = false;
     this.isClick = false;
     this.layersContainer = undefined;
+    this.divLayersContainer = undefined;
     this.canvasSizefixed = false;
     this.previousFrameTime = new Date().getTime();
     this.isResizing = false;
     this.layers = [];
+    this.divLayers = [];
     this.isResizingCallback = () => { };
     this.resizedCallback = () => { };
     this.initBase();
@@ -31,11 +33,28 @@ export class Canvas2DFxBase {
 
     if (this.ele.tagName !== 'CANVAS') {
       const cvs = document.createElement('canvas');
+      this.cvs = cvs;
       this.layersContainer = document.createElement('div');
       this.layersContainer.classList.add('layers-container');
+      this.layersContainer.style.fontSize = 0;
+      this.layersContainer.style.position = 'absolute';
+      this.layersContainer.style.width = '100%'
+      this.layersContainer.style.height = '100%';
       this.layersContainer.appendChild(cvs);
-      this.ele.appendChild(this.layersContainer);
-      this.cvs = cvs;
+      this.divLayerContainer = document.createElement('div');
+      this.divLayerContainer.classList.add('div-layers-container');
+      this.divLayerContainer.style.position = 'absolute';
+      this.divLayerContainer.style.width = '100%'
+      this.divLayerContainer.style.height = '100%';
+      this.surrounding = document.createElement('div');
+      this.surrounding.style.position = 'absolute';
+      this.surrounding.style.width = '100%'
+      this.surrounding.style.height = '100%';
+      this.surrounding.classList.add('render-env__surrounding')
+      this.surrounding.appendChild(this.layersContainer);
+      this.surrounding.insertBefore(this.divLayerContainer, this.layersContainer);
+      this.ele.append(this.surrounding);
+      this.ele.classList.add('render-env');
     }
     else {
       this.cvs = this.ele;
@@ -66,6 +85,11 @@ export class Canvas2DFxBase {
     this.refreshBaseFrameCounter();
 
   }
+
+  updatePositionOptionSetting() {
+
+  }
+
   refreshBaseFrameCounter() {
     let thisFrameTime = new Date().getTime();
     this.timeElapsed = (thisFrameTime - this.previousFrameTime) / 1000;
@@ -170,29 +194,30 @@ export class Canvas2DFxBase {
   }
 
   addNewLayer() {
+    if (this.ele.tagName === 'CANVAS') return new TypeError(`新增圖層方法只支援以空div容器初始化的渲染環境`);
     let cvs = document.createElement('canvas');
     cvs.style.position = 'absolute';
-    let parentPosition = window.getComputedStyle(this.cvs.parentNode).getPropertyValue('position');
-    if (parentPosition === 'static') {
-      this.cvs.parentNode.style.position = 'relative';
-    }
-    this.cvs.parentNode.insertBefore(cvs, this.cvs);
+    this.layersContainer.prepend(cvs);
     let cvsInstance = new Canvas2DFxBase(cvs, {}, {}, this.ele);
     this.layers.push(cvsInstance);
     return cvsInstance;
   }
 
-  addDivLayer() {
+  addDivLayer(id, className) {
+    if (this.ele.tagName === 'CANVAS') return new TypeError(`新增圖層方法只支援以空div容器初始化的渲染環境`);
     let divLayer = document.createElement('div');
-    divLayer.style.position = 'absolute';
-    let parentPosition = window.getComputedStyle(this.divLayer.parentNode).getPropertyValue('position');
-    if (parentPosition === 'static') {
-      this.divLayer.parentNode.style.position = 'relative';
+    if (!!className) {
+      divLayer.classList.add(className);
     }
-    this.divLayer.parentNode.insertBefore(divLayer, this.divLayer);
-    let cvsInstance = new Canvas2DFxBase(divLayer, {}, {}, this.ele);
-    this.layers.push(cvsInstance);
-    return cvsInstance;
+    if (!!id) {
+      divLayer.id = id;
+    }
+    divLayer.style.position = 'absolute';
+    divLayer.style.width = '100%';
+    divLayer.style.height = '100%';
+    this.divLayerContainer.prepend(divLayer);
+    this.divLayers.push(divLayer);
+    return divLayer
   }
 }
 

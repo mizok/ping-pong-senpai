@@ -17,7 +17,8 @@ export class Engine extends Canvas2DFxBase {
     this.pixelBase = 1440;
     this.init();
     this.fps = 30;
-    this.courtOffset = 100;
+    this.courtOffset = 75;
+    this.courtOffsetMobile = 25;
     this.gameStatus = 0;
     this.pause = false;
     this.playersThickness = 20;
@@ -102,6 +103,7 @@ export class Engine extends Canvas2DFxBase {
 
   responsivePainter(targetLayer, sourceCanvas, initialImage) {
     let offset = this.courtOffset;
+    let offsetMobile = this.courtOffsetMobile;
     targetLayer.ctx.save();
     //畫court 會有四種狀況, (canvas長寬>預設長寬比>1) | (1<=canvas長寬<預設長寬比) | (預設長寬比倒數<canvas長寬比<1) ｜ (canvas長寬比<預設長寬比倒數<1)
     if (this.getAspectRatio() >= 1) {
@@ -160,12 +162,12 @@ export class Engine extends Canvas2DFxBase {
       //這邊是後兩種狀況
       // 因為court 的大小會隨著canvas 的長寬比而變動
       // 這邊先 假設今天是canvas 高比寬比超出很多的情況 , 也就是狀況"typeA"
-      let typeA = (targetLayer.cvs.width - 2 * offset) * this.config.courtAspectRatio < targetLayer.cvs.height - 2 * offset;
+      let typeA = (targetLayer.cvs.width - 2 * offsetMobile) * this.config.courtAspectRatio < targetLayer.cvs.height - 2 * offset;
       let offsetV, offsetH, courtHeight, courtWidth;
       if (typeA) {
         // 先算出縮減過offset 的cvs 寬
-        offsetH = offset;
-        courtWidth = targetLayer.cvs.width - 2 * offset;
+        offsetH = offsetMobile;
+        courtWidth = targetLayer.cvs.width - 2 * offsetMobile;
         courtHeight = courtWidth * this.config.courtAspectRatio;
         offsetV = (targetLayer.cvs.height - courtHeight) / 2;
       }
@@ -314,6 +316,42 @@ export class Engine extends Canvas2DFxBase {
   }
 
   genScoreboards() {
+    let scoreboardsLayer = this.addDivLayer('scoreboards', 'scoreboards');
+    let topBar = document.createElement('div');
+    let botBar = document.createElement('div');
+    topBar.classList.add('scoreboards__top-bar');
+    botBar.classList.add('scoreboards__bot-bar');
+    scoreboardsLayer.append(topBar, botBar);
+    let genPlayerShowcase = (playerName, playerId, scoreMax) => {
+
+      let playerShowCase = document.createElement('div');
+      playerShowCase.classList.add('player-showcase');
+      playerShowCase.id = playerId;
+      let innerHTML = `
+        <div class="player-showcase__name">${playerName}</div>
+        <div class="player-showcase__score">
+          0000   
+        </div>
+      `
+      playerShowCase.innerHTML = innerHTML;
+      return playerShowCase;
+    }
+    for (let i = 0; i < playersData.length; i++) {
+      topBar.append(genPlayerShowcase(playersData[i].name, playersData[i].id, 5))
+    }
+    let scoreboards = {
+      updateScore: (playerId, score) => {
+
+      },
+      ready: () => {
+        scoreboardsLayer.classList.add('scoreboards--ready');
+      },
+      loopUpdate: () => {
+
+      }
+    }
+
+    return scoreboards
   }
 
   genBall(speed = 100, size = 30, color = 'white') {
