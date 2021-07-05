@@ -1,7 +1,6 @@
 .scoreboards {
   z-index: 2;
   display: none;
-  animation: fadeIn 1s;
 
   &--ready {
     display: block;
@@ -25,6 +24,8 @@
 
   &__top-bar {
     border-bottom: 3px solid $gs000;
+    animation: fadeInDown 1s;
+
   }
 
   &__bot-bar {
@@ -32,27 +33,19 @@
     width: 100%;
     bottom: 0;
     border-top: 3px solid $gs000;
+    animation: fadeInUp 1s;
   }
 }
 
 
 .player-showcase {
-  display: flex;
-
-  @media screen and (max-aspect-ratio: 3/5) {
-    display: block;
-    text-align: left;
-  }
+  display: block;
+  text-align: left;
 
   &+& {
+    display: block;
+    text-align: right;
     margin-left: auto;
-    flex-direction: row-reverse;
-
-    @media screen and (max-aspect-ratio: 3/5) {
-      display: block;
-      text-align: right;
-    }
-
   }
 
 
@@ -61,12 +54,10 @@
   }
 
   &__score {
-    margin: 0 20px;
 
-    @media screen and (max-aspect-ratio: 3/5) {
-      margin: 0;
-      margin-top: 5px;
-    }
+    margin-top: 5px;
+
+
   }
 }
 

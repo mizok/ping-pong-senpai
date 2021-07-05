@@ -3,7 +3,7 @@ import { StrokeAnimation, Swirl8Bit, StarSky } from './lib/animation';
 import { getCacheCanvas } from './lib/util';
 import { playersData, ballData } from '../data';
 import { drawRect, drawCircle } from './lib/shape'
-import { randomWithinRange } from './lib/function';
+import { randomWithinRange, padString } from './lib/function';
 
 const DEFAULT = {
   bgColor: 'rgba(0,0,0,1)',
@@ -326,7 +326,7 @@ export class Engine extends Canvas2DFxBase {
 
       let playerShowCase = document.createElement('div');
       playerShowCase.classList.add('player-showcase');
-      playerShowCase.id = playerId;
+      playerShowCase.id = `player${playerId}`;
       let innerHTML = `
         <div class="player-showcase__name">${playerName}</div>
         <div class="player-showcase__score">
@@ -340,14 +340,14 @@ export class Engine extends Canvas2DFxBase {
       topBar.append(genPlayerShowcase(playersData[i].name, playersData[i].id, 5))
     }
     let scoreboards = {
-      updateScore: (playerId, score) => {
-
+      update: () => {
+        for (let i = 0; i < playersData.length; i++) {
+          scoreboardsLayer.querySelector(`#player${i}`).querySelector('.player-showcase__name').innerHTML = playersData[i].name;
+          scoreboardsLayer.querySelector(`#player${i}`).querySelector('.player-showcase__score').innerHTML = padString(playersData[i].score, 4);
+        }
       },
       ready: () => {
         scoreboardsLayer.classList.add('scoreboards--ready');
-      },
-      loopUpdate: () => {
-
       }
     }
 
@@ -437,7 +437,6 @@ export class Engine extends Canvas2DFxBase {
   initGameDataUpdateInterval() {
     this.players.loopUpdate();
     this.ball.loopUpdate();
-    this.scoreboards.loopUpdate();
   }
 
 
@@ -446,5 +445,9 @@ export class Engine extends Canvas2DFxBase {
 
 export function gameBuilder() {
   let game = boot(Engine, DEFAULT, {}, document.body);
+  game.promise.then((instance) => {
+    game.controller = instance;
+  })
   return game;
 }
+

@@ -12,29 +12,29 @@ splashPromise.then((switcher) => {
 })
 
 let uiInitPromise = initUI(socket);
-let game = gameBuilder();
-let gameContoller;
+export const game = gameBuilder();
+
+// 上線後要移除 start
+game.promise.then(() => {
+  window.go = () => {
+    game.controller.surrounding.classList.add('promoted');
+    let gameReadyPromise = game.controller.drawGame();
+    gameReadyPromise.then(() => {
+      splashSwitcher(false);
+    })
+  }
+})
+// 上線後要移除 end
 
 uiInitPromise.then(() => {
   game.trigger();
 })
 
-game.promise.then((instance) => {
-  gameContoller = instance;
-  window.go = () => {
-    gameContoller.surrounding.classList.add('promoted');
-    let gameReadyPromise = gameContoller.drawGame();
-    gameReadyPromise.then(() => {
-      splashSwitcher(false);
-    })
-  }
-
-})
-
 socket.on('gameInit', () => {
   startCounting(() => {
-    gameContoller.surrounding.classList.add('promoted');
-    let gameReadyPromise = gameContoller.drawGame();
+    game.controller.surrounding.classList.add('promoted');
+    game.controller.scoreboards.update();
+    let gameReadyPromise = game.controller.drawGame();
     gameReadyPromise.then(() => {
       splashSwitcher(false);
     })
@@ -42,15 +42,15 @@ socket.on('gameInit', () => {
 })
 
 socket.on('host-leave', () => {
-  gameContoller.cvs.classList.remove('promoted');
+  game.controller.surrounding.classList.remove('promoted');
 })
 
 socket.on('challenger-leave', () => {
-  gameContoller.cvs.classList.remove('promoted');
+  game.controller.surrounding.classList.remove('promoted');
 })
 
 socket.on('leave', () => {
-  gameContoller.cvs.classList.remove('promoted');
+  game.controller.surrounding.classList.remove('promoted');
 })
 
 socket.on('tooManyPlayers', () => {

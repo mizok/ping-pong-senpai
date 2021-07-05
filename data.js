@@ -31,7 +31,8 @@ export const ballData = {
     y: 0
   },
   size: 0,
-  color: null
+  color: null,
+  isStuck: true
 }
 
 

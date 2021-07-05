@@ -162,3 +162,10 @@ export function calcWaypoints(vertices, interpolate = 30) {
 
   return (waypoints);
 }
+
+export function padString(targetStr, length, padString = '0') {
+  var str = targetStr.toString();
+  while (str.length < length)
+    str = padString + str;
+  return str;
+}

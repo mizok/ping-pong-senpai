@@ -1,6 +1,7 @@
 import { $ } from './core/lib/dom';
 import { parents, fadeOut } from './core/lib/dom';
-import { playerRef } from './data'
+import { playerRef, playersData } from './data';
+import { game } from './index';
 
 
 export function initUI(socket) {
@@ -134,7 +135,7 @@ export function initUI(socket) {
         });
         document.querySelectorAll('[data-role="player2"]').forEach(ele => {
           ele.style.display = 'none';
-        })
+        });
       }
       else if (playerRef.number == 2) {
         document.querySelectorAll('[data-role="opponent"]').forEach(ele => {
@@ -147,6 +148,8 @@ export function initUI(socket) {
       togglePopout('room-code-display-popout', false);
       togglePopout('join-game-prompt', false);
       togglePopout('game-start-alert', true);
+      playersData[0].name = data.hostName;
+      playersData[1].name = data.playerName;
     }
   })
 
@@ -183,6 +186,7 @@ export function initUI(socket) {
   //綁定當server傳來'gameInit'訊號後，ui 應產生的對應行為
   socket.on('gameInit', () => {
     togglePopout('game-start-alert', false);
+
   })
 
 
