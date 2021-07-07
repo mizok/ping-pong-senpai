@@ -1,7 +1,6 @@
 import { $ } from './core/lib/dom';
 import { parents, fadeOut } from './core/lib/dom';
 import { playerRef, playersData } from './data';
-import { game } from './index';
 
 
 export function initUI(socket) {
@@ -212,14 +211,7 @@ function togglePopout(id, status) {
     popout.classList.remove('popout--show');
   }
 }
-/**
- * 隱藏起始畫面
- *
- */
-function hideInitialScreen() {
-  let initialScreen = $('#initial-screen');
-  initialScreen.style.display = 'none';
-}
+
 /**
  *  開關具有hide-on-action屬性的ui element,
  *

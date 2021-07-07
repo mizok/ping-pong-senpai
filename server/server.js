@@ -30,6 +30,18 @@ io.on("connection", (client) => {
     startMatchHandler(client);
   })
 
+  client.on('playerMovePlus', (data) => {
+
+  })
+
+  client.on('playerMovePlus', (data) => {
+
+  })
+
+  client.on('playerLaunchBall', (data) => {
+
+  })
+
 
   startGameInterval(client, stateStorage);
   // 綁定server 下線事件
@@ -122,7 +134,7 @@ async function leaveStartingGameHandler(data, client) {
 
 async function disconnectHandler(client) {
   let socketInstances = await io.in(client.roomId).fetchSockets();
-  if (socketInstances.length === 0 || !socketInstances) return;
+  if (socketInstances.length <= 1 || !socketInstances) return;
   let players = {
     host: client.name,
     challenger: socketInstances[1].name

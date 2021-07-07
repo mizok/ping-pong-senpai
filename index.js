@@ -1,6 +1,7 @@
 import { initUI, startCounting } from './ui';
 import { initSplash } from './core/splash';
 import { gameBuilder } from './core/game';
+import { initKeyControl } from './controll';
 
 
 const socket = require('socket.io-client')('http://localhost:3000');
@@ -16,13 +17,12 @@ export const game = gameBuilder();
 
 // 上線後要移除 start
 game.promise.then(() => {
-  window.go = () => {
-    game.controller.surrounding.classList.add('promoted');
-    let gameReadyPromise = game.controller.drawGame();
-    gameReadyPromise.then(() => {
-      splashSwitcher(false);
-    })
-  }
+  game.controller.surrounding.classList.add('promoted');
+  let gameReadyPromise = game.controller.drawGame();
+  gameReadyPromise.then(() => {
+    splashSwitcher(false);
+    initKeyControl(socket);
+  })
 })
 // 上線後要移除 end
 
