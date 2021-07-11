@@ -1,6 +1,6 @@
 import { $ } from './core/lib/dom';
 import { parents, fadeOut } from './core/lib/dom';
-import { playerRef, playersData } from './data';
+import { playerRef, playersData, courtData } from './data';
 
 
 export function initUI(socket) {
@@ -241,8 +241,12 @@ function toggleShowOnAction(status) {
  */
 function newGame(socket) {
   playerRef.number = 1;
+  const newGameData = {
+    playersData: playersData,
+    courtData: courtData
+  }
   togglePopout('room-code-display-popout', true);
-  socket.emit('newGame');
+  socket.emit('newGame', JSON.stringify(newGameData));
 }
 /**
  * 向server發出確認參加遊戲的信號

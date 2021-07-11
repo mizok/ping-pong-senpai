@@ -1,7 +1,6 @@
 import { playerRef } from './data';
 
 export function initKeyControl(intervalPeriod = 300, socket) {
-  let keyHoldInterval;
   document.addEventListener('keydown', (e) => {
     let windowAspectRatio = window.innerWidth / window.innerHeight;
     if (windowAspectRatio >= 1) {
@@ -9,18 +8,12 @@ export function initKeyControl(intervalPeriod = 300, socket) {
         case "Down": // IE/Edge specific value
         case "ArrowDown":
           // Do something for "down arrow" key press.
-          clearInterval(keyHoldInterval);
-          keyHoldInterval = setInterval(() => {
-            socket.emit('playerMoveMinus', playerRef);
-          }, intervalPeriod)
+          socket.emit('playerMoveMinus', playerRef);
           break;
         case "Up": // IE/Edge specific value
         case "ArrowUp":
           // Do something for "up arrow" key press.
-          clearInterval(keyHoldInterval);
-          keyHoldInterval = setInterval(() => {
-            socket.emit('playerMovePlus', playerRef);
-          }, intervalPeriod)
+          socket.emit('playerMovePlus', playerRef);
           break;
       }
     }
@@ -29,18 +22,12 @@ export function initKeyControl(intervalPeriod = 300, socket) {
         case "Left": // IE/Edge specific value
         case "ArrowLeft":
           // Do something for "left arrow" key press.
-          clearInterval(keyHoldInterval);
-          keyHoldInterval = setInterval(() => {
-            socket.emit('playerMoveMinus', playerRef);
-          }, intervalPeriod)
+          socket.emit('playerMoveMinus', playerRef);
           break;
         case "Right": // IE/Edge specific value
         case "ArrowRight":
           // Do something for "right arrow" key press.
-          clearInterval(keyHoldInterval);
-          keyHoldInterval = setInterval(() => {
-            socket.emit('playerMovePlus', playerRef);
-          }, intervalPeriod)
+          socket.emit('playerMovePlus', playerRef);
           break;
       }
     }
@@ -59,6 +46,8 @@ export function initKeyControl(intervalPeriod = 300, socket) {
         return; // Quit when this doesn't handle the key event.
     }
   })
+
+
 }
 
 

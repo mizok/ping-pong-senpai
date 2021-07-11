@@ -11,15 +11,15 @@ io.on("connection", (client) => {
     client.name = data;
   })
 
-  client.on('newGame', () => {
-    newGameHandler(client)
+  client.on('newGame', (data) => {
+    newGameHandler(client, data)
   });
 
   client.on('leaveStartingGame', (data) => {
     leaveStartingGameHandler(data, client);
   })
 
-  client.on('leaveWaiting', async () => {
+  client.on('leaveWaiting', () => {
     // 關閉該client 所存在的房間,也就是移除所有玩家
     closeRoomHandler(client);
   })
@@ -31,19 +31,29 @@ io.on("connection", (client) => {
   })
 
   client.on('playerMovePlus', (data) => {
-
+    let roomId = client.roomId;
+    let positionNow = stateStorage[roomId].players[data.number - 1].position.x;
+    let playerWidth = stateStorage[roomId].players[data.number - 1].width;
+    let courtSize = stateStorage[roomId].court.width;
+    if (positionNow + 20 >= courtSize - playerWidth / 2) return;
+    stateStorage[roomId].players[data.number - 1].position.x += 20;
   })
 
-  client.on('playerMovePlus', (data) => {
-
+  client.on('playerMoveMinus', (data) => {
+    let roomId = client.roomId;
+    let positionNow = stateStorage[roomId].players[data.number - 1].position.x;
+    let playerWidth = stateStorage[roomId].players[data.number - 1].width;
+    if (positionNow - 20 <= playerWidth / 2) return;
+    stateStorage[roomId].players[data.number - 1].position.x -= 20;
   })
 
   client.on('playerLaunchBall', (data) => {
-
+    let roomId = client.roomId;
+    stateStorage[roomId].ball.isStuck = false;
   })
 
 
-  startGameInterval(client, stateStorage);
+
   // 綁定server 下線事件
   client.on('disconnecting', () => {
     disconnectHandler(client);
@@ -51,11 +61,11 @@ io.on("connection", (client) => {
 });
 
 
-function newGameHandler(client) {
+function newGameHandler(client, data) {
   let roomCode = genRandomId(5);
   clientRooms[client.id] = roomCode;
   client.emit('genRoomCode', roomCode);
-  stateStorage[roomCode] = genGameState();
+  stateStorage[roomCode] = genGameState(data);
   client.join(roomCode);
   client.roomId = roomCode;
   client.number = 1;
@@ -165,13 +175,16 @@ async function startMatchHandler(client) {
   let socketInstances = await io.in(client.roomId).fetchSockets();
   socketInstances.forEach(client => {
     client.emit('gameInit');
+    startGameInterval(client);
   })
 }
 
 
-function startGameInterval(client, roomCode) {
+function startGameInterval(client) {
+  let roomCode = client.roomId;
   const intervalId = setInterval(() => {
     const gameStatus = getGameStatus(stateStorage[roomCode]);
+    if (!stateStorage[roomCode]) return;
     if (gameStatus.end) {
       client.emit('gameOver', JSON.stringify(stateStorage[roomCode]));
       clearInterval(intervalId);

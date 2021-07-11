@@ -21,6 +21,11 @@ export const playersData = [
   }
 ];
 
+export const courtData = {
+  width: 0,
+  height: 0
+}
+
 export const ballData = {
   position: {
     x: 0,

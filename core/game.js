@@ -1,7 +1,7 @@
 import { Canvas2DFxBase, boot } from './lib/base';
 import { StrokeAnimation, Swirl8Bit, StarSky } from './lib/animation';
 import { getCacheCanvas } from './lib/util';
-import { playersData, ballData } from '../data';
+import { playersData, ballData, courtData } from '../data';
 import { drawRect, drawCircle } from './lib/shape'
 import { randomWithinRange, padString } from './lib/function';
 
@@ -209,8 +209,8 @@ export class Engine extends Canvas2DFxBase {
 
   genCourt(strokeWidth = 10) {
     let courtCanvasInstance = this.courtCanvasInstance = this.createVirtualCanvasBaseInstance();
-    let courtCanvasWidth = this.pixelBase / this.config.courtAspectRatio;
-    let courtCanvasHeight = this.pixelBase;
+    let courtCanvasWidth = courtData.width = this.pixelBase / this.config.courtAspectRatio;
+    let courtCanvasHeight = courtData.height = this.pixelBase;
     courtCanvasInstance.setCanvasSize(courtCanvasWidth, courtCanvasHeight);
     let vertices = [
       { x: 0, y: 0 },

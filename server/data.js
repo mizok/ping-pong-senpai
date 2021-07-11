@@ -6,7 +6,7 @@ const clientRooms = {
 
 }
 
-function genGameState() {
+function genGameState(data) {
   let state = {
     ball: {
       speed: {
@@ -16,18 +16,12 @@ function genGameState() {
       position: {
         x: 0,
         y: 0
-      }
-    },
-    players: [
-      {
-        location: 0
       },
-      {
-        location: 0
-      }
-    ]
+      isStuck: true
+    },
+    players: JSON.parse(data).playersData,
+    court: JSON.parse(data).courtData,
   }
-
   return state;
 }
 
