@@ -1,7 +1,7 @@
 import { Canvas2DFxBase, boot } from './lib/base';
 import { StrokeAnimation, Swirl8Bit, StarSky } from './lib/animation';
 import { getCacheCanvas } from './lib/util';
-import { playersData, ballData, courtData } from '../data';
+import { playersData, ballData, courtData, playerRef } from '../data';
 import { drawRect, drawCircle } from './lib/shape'
 import { randomWithinRange, padString } from './lib/function';
 
@@ -141,8 +141,11 @@ export class Engine extends Canvas2DFxBase {
 
       }
       // 先旋轉畫布, 因為 virtualcanvas 是一張垂直的畫布
+      let rotatePram = playerRef.number == 1 ? 1 : -1
+      let scalePram = playerRef.number == 1 ? 1 : -1
       targetLayer.ctx.translate(targetLayer.cvs.width / 2, targetLayer.cvs.height / 2);
       targetLayer.ctx.rotate(-Math.PI / 2);
+      targetLayer.ctx.scale(1, 1 * scalePram);
       targetLayer.ctx.translate(-targetLayer.cvs.height / 2, -targetLayer.cvs.width / 2);
       // 因為court 的大小會隨著canvas 的長寬比而變動
       // 這邊先 假設今天是canvas 寬比高超出很多的情況 , 也就是狀況"typeA"
@@ -191,6 +194,12 @@ export class Engine extends Canvas2DFxBase {
           targetLayer.cvs.height
         )
       }
+      let rotatePram = playerRef.number == 1 ? 2 : 1;
+      let scalePram = playerRef.number == 1 ? 1 : -1;
+      targetLayer.ctx.translate(targetLayer.cvs.width / 2, targetLayer.cvs.height / 2);
+      targetLayer.ctx.rotate(Math.PI * rotatePram);
+      targetLayer.ctx.scale(1 * scalePram, 1);
+      targetLayer.ctx.translate(-targetLayer.cvs.width / 2, -targetLayer.cvs.height / 2);
       targetLayer.ctx.drawImage(
         sourceCanvas,
         0,
@@ -407,8 +416,7 @@ export class Engine extends Canvas2DFxBase {
   drawGame() {
     this.gameStatus = 1;
     this.starSky.animate();
-    let promise = this.curtain.animate();
-    promise
+    let promise = this.curtain.animate()
       .then(() => {
         this.gameStatus = 2;
         return this.court.animate();

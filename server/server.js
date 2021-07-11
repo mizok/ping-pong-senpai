@@ -30,6 +30,10 @@ io.on("connection", (client) => {
     startMatchHandler(client);
   })
 
+  client.on('gameReady', () => {
+    gameReadyHandler(client);
+  })
+
   client.on('playerMovePlus', (data) => {
     let roomId = client.roomId;
     let positionNow = stateStorage[roomId].players[data.number - 1].position.x;
@@ -183,8 +187,21 @@ async function startMatchHandler(client) {
   let socketInstances = await io.in(client.roomId).fetchSockets();
   socketInstances.forEach(client => {
     client.emit('gameInit');
-    startGameInterval(client);
   })
+}
+
+async function gameReadyHandler(client) {
+  client.isReady = true;
+  let ready = false;
+  let socketInstances = await io.in(client.roomId).fetchSockets();
+  socketInstances.forEach(client => {
+    ready = client.isReady;
+  });
+  if (ready) {
+    socketInstances.forEach(client => {
+      startGameInterval(client);
+    });
+  }
 }
 
 

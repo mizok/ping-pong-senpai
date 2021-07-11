@@ -15,17 +15,6 @@ splashPromise.then((switcher) => {
 let uiInitPromise = initUI(socket);
 export const game = gameBuilder();
 
-// 上線後要移除 start
-// game.promise.then(() => {
-//   game.controller.surrounding.classList.add('promoted');
-//   let gameReadyPromise = game.controller.drawGame();
-//   gameReadyPromise.then(() => {
-//     splashSwitcher(false);
-//     initKeyControl(100, socket);
-//   })
-// })
-// 上線後要移除 end
-
 uiInitPromise.then(() => {
   game.trigger();
 })
@@ -36,6 +25,7 @@ socket.on('gameInit', () => {
     game.controller.scoreboards.update();
     let gameReadyPromise = game.controller.drawGame();
     gameReadyPromise.then(() => {
+      socket.emit('gameReady');
       splashSwitcher(false);
       initKeyControl(100, socket);
     })
@@ -60,7 +50,6 @@ socket.on('gameProceeding', (data) => {
     playersData[i].position.x = serverData.players[i].position.x;
   }
   ballData.position = serverData.ball.position;
-  console.log(ballData.position);
 })
 
 socket.on('tooManyPlayers', () => {
