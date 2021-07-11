@@ -37,6 +37,10 @@ io.on("connection", (client) => {
     let courtSize = stateStorage[roomId].court.width;
     if (positionNow + 20 >= courtSize - playerWidth / 2) return;
     stateStorage[roomId].players[data.number - 1].position.x += 20;
+    if (stateStorage[roomId].ball.isStuck) {
+      let ballIsHoldBy = stateStorage[roomId].ball.isHoldBy;
+      stateStorage[roomId].ball.position.x = stateStorage[roomId].players[ballIsHoldBy].position.x;
+    }
   })
 
   client.on('playerMoveMinus', (data) => {
@@ -45,6 +49,10 @@ io.on("connection", (client) => {
     let playerWidth = stateStorage[roomId].players[data.number - 1].width;
     if (positionNow - 20 <= playerWidth / 2) return;
     stateStorage[roomId].players[data.number - 1].position.x -= 20;
+    if (stateStorage[roomId].ball.isStuck) {
+      let ballIsHoldBy = stateStorage[roomId].ball.isHoldBy;
+      stateStorage[roomId].ball.position.x = stateStorage[roomId].players[ballIsHoldBy].position.x;
+    }
   })
 
   client.on('playerLaunchBall', (data) => {

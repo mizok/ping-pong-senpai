@@ -2,7 +2,7 @@ import { initUI, startCounting } from './ui';
 import { initSplash } from './core/splash';
 import { gameBuilder } from './core/game';
 import { initKeyControl } from './controll';
-import { playersData } from './data'
+import { playersData, ballData } from './data'
 
 const socket = require('socket.io-client')('http://localhost:3000');
 
@@ -59,6 +59,8 @@ socket.on('gameProceeding', (data) => {
   for (let i = 0; i < playersData.length; i++) {
     playersData[i].position.x = serverData.players[i].position.x;
   }
+  ballData.position = serverData.ball.position;
+  console.log(ballData.position);
 })
 
 socket.on('tooManyPlayers', () => {

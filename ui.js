@@ -1,6 +1,6 @@
 import { $ } from './core/lib/dom';
 import { parents, fadeOut } from './core/lib/dom';
-import { playerRef, playersData, courtData } from './data';
+import { playerRef, playersData, courtData, ballData } from './data';
 
 
 export function initUI(socket) {
@@ -243,7 +243,8 @@ function newGame(socket) {
   playerRef.number = 1;
   const newGameData = {
     playersData: playersData,
-    courtData: courtData
+    courtData: courtData,
+    ballData: ballData
   }
   togglePopout('room-code-display-popout', true);
   socket.emit('newGame', JSON.stringify(newGameData));

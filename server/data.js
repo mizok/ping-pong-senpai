@@ -8,17 +8,7 @@ const clientRooms = {
 
 function genGameState(data) {
   let state = {
-    ball: {
-      speed: {
-        x: 0,
-        y: 0
-      },
-      position: {
-        x: 0,
-        y: 0
-      },
-      isStuck: true
-    },
+    ball: JSON.parse(data).ballData,
     players: JSON.parse(data).playersData,
     court: JSON.parse(data).courtData,
   }

@@ -105,11 +105,11 @@ export class Engine extends Canvas2DFxBase {
     let offset = this.courtOffset;
     let offsetMobile = this.courtOffsetMobile;
     targetLayer.ctx.save();
+    targetLayer.clear();
     //畫court 會有四種狀況, (canvas長寬>預設長寬比>1) | (1<=canvas長寬<預設長寬比) | (預設長寬比倒數<canvas長寬比<1) ｜ (canvas長寬比<預設長寬比倒數<1)
     if (this.getAspectRatio() >= 1) {
       // 這邊是前兩種狀況
-      //先清除一次之後畫initialImage , 再畫court
-      targetLayer.clear();
+      //畫initialImage , 再畫court
       let typeA = (targetLayer.cvs.height - 2 * offset) * this.config.courtAspectRatio < targetLayer.cvs.width - 2 * offset;
       let offsetV, offsetH, courtHeight, courtWidth;
       if (typeA) {
