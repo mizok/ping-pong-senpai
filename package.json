@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd server && npm start && cd ..",
-    "build": "webpack",
+    "start": "cd server && npm run serve && cd ..",
+    "build": "npx webpack",
     "deploy": "export COMMIT_DATE=$(date) && git add . && git commit -m 'deploy commit $COMMIT_TITLE' && git push heroku master "
   },
   "repository": {
